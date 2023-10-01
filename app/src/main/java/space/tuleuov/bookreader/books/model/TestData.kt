@@ -1,5 +1,7 @@
 package space.tuleuov.bookreader.books.model
 
+import space.tuleuov.bookreader.R
+
 class TestData {
 
     fun loadLocalBooks(): List<LocalBook> {
@@ -11,7 +13,7 @@ class TestData {
                 genre = "Genre 1",
                 pageCount = 200,
                 yearOfPublication = 2020,
-                imageUrl = "https://example.com/image1.jpg"
+                coverResId = R.drawable.clashofkings
             ),
             LocalBook(
                 id = 2,
@@ -20,7 +22,7 @@ class TestData {
                 genre = "Genre 2",
                 pageCount = 250,
                 yearOfPublication = 2019,
-                imageUrl = "https://example.com/image2.jpg"
+                coverResId = R.drawable.one_piece
             ),
             LocalBook(
                 id = 3,
@@ -29,7 +31,7 @@ class TestData {
                 genre = "Genre 3",
                 pageCount = 300,
                 yearOfPublication = 2021,
-                imageUrl = "https://example.com/image3.jpg"
+                coverResId = R.drawable.pg8jbc03
             ),
             LocalBook(
                 id = 4,
@@ -38,7 +40,7 @@ class TestData {
                 genre = "Genre 4",
                 pageCount = 220,
                 yearOfPublication = 2018,
-                imageUrl = "https://example.com/image4.jpg"
+                coverResId = R.drawable.i565152
             ),
             LocalBook(
                 id = 5,
@@ -47,7 +49,7 @@ class TestData {
                 genre = "Genre 5",
                 pageCount = 280,
                 yearOfPublication = 2022,
-                imageUrl = "https://example.com/image5.jpg"
+                coverResId = R.drawable.clashofkings
             ),
             LocalBook(
                 id = 6,
@@ -56,7 +58,7 @@ class TestData {
                 genre = "Genre 6",
                 pageCount = 240,
                 yearOfPublication = 2017,
-                imageUrl = "https://example.com/image6.jpg"
+                coverResId = R.drawable.clashofkings
             ),
             LocalBook(
                 id = 7,
@@ -65,7 +67,7 @@ class TestData {
                 genre = "Genre 7",
                 pageCount = 190,
                 yearOfPublication = 2015,
-                imageUrl = "https://example.com/image7.jpg"
+                coverResId = R.drawable.clashofkings
             ),
             LocalBook(
                 id = 8,
@@ -74,7 +76,7 @@ class TestData {
                 genre = "Genre 8",
                 pageCount = 270,
                 yearOfPublication = 2023,
-                imageUrl = "https://example.com/image8.jpg"
+                coverResId = R.drawable.clashofkings
             ),
             LocalBook(
                 id = 9,
@@ -83,7 +85,7 @@ class TestData {
                 genre = "Genre 9",
                 pageCount = 310,
                 yearOfPublication = 2016,
-                imageUrl = "https://example.com/image9.jpg"
+                coverResId = R.drawable.clashofkings
             ),
             LocalBook(
                 id = 10,
@@ -92,7 +94,7 @@ class TestData {
                 genre = "Genre 10",
                 pageCount = 230,
                 yearOfPublication = 2014,
-                imageUrl = "https://example.com/image10.jpg"
+                coverResId = R.drawable.clashofkings
             ),
             LocalBook(
                 id = 11,
@@ -101,7 +103,7 @@ class TestData {
                 genre = "Genre 11",
                 pageCount = 260,
                 yearOfPublication = 2024,
-                imageUrl = "https://example.com/image11.jpg"
+                coverResId = R.drawable.clashofkings
             ),
             LocalBook(
                 id = 12,
@@ -110,7 +112,7 @@ class TestData {
                 genre = "Genre 12",
                 pageCount = 280,
                 yearOfPublication = 2022,
-                imageUrl = "https://example.com/image12.jpg"
+                coverResId = R.drawable.clashofkings
             ),
             LocalBook(
                 id = 13,
@@ -119,7 +121,7 @@ class TestData {
                 genre = "Genre 13",
                 pageCount = 190,
                 yearOfPublication = 2015,
-                imageUrl = "https://example.com/image13.jpg"
+                coverResId = R.drawable.clashofkings
             ),
             LocalBook(
                 id = 14,
@@ -128,7 +130,7 @@ class TestData {
                 genre = "Genre 14",
                 pageCount = 270,
                 yearOfPublication = 2023,
-                imageUrl = "https://example.com/image14.jpg"
+                coverResId = R.drawable.clashofkings
             ),
             LocalBook(
                 id = 15,
@@ -137,7 +139,7 @@ class TestData {
                 genre = "Genre 15",
                 pageCount = 310,
                 yearOfPublication = 2016,
-                imageUrl = "https://example.com/image15.jpg"
+                coverResId = R.drawable.clashofkings
             )
         )
     }

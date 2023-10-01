@@ -7,5 +7,5 @@ data class LocalBook(
     val genre: String,
     val pageCount: Int,
     val yearOfPublication: Int,
-    val imageUrl: String
+    val coverResId: Int
 )

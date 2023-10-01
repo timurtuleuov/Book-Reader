@@ -10,6 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import space.tuleuov.bookreader.ui.component.BooksListPreview
+import space.tuleuov.bookreader.ui.component.PdfViewerPage
 import space.tuleuov.bookreader.ui.component.SearchViewPreview
 import space.tuleuov.bookreader.ui.component.UserPreview
 import space.tuleuov.bookreader.ui.theme.BookReaderTheme
@@ -33,8 +34,8 @@ class MainActivity : ComponentActivity() {
                         Spacer(modifier = Modifier.height(60.dp))
                         SearchViewPreview()
                         Spacer(modifier = Modifier.height(30.dp))
-                        BooksListPreview()
 
+                        BooksListPreview()
                     }
                 }
             }
