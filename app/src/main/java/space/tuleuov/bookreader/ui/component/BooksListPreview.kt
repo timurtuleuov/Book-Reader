@@ -1,5 +1,6 @@
 package space.tuleuov.bookreader.ui.component
 
+import android.content.res.Resources
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
@@ -13,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -21,20 +23,26 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import space.tuleuov.bookreader.books.model.LocalBook
 import space.tuleuov.bookreader.books.model.TestData
+import space.tuleuov.bookreader.ui.theme.SupportText
 import space.tuleuov.bookreader.ui.theme.TextTitle
 
+val densityDpi = Resources.getSystem().displayMetrics.densityDpi
 
 @Composable
 fun BooksListPreview() {
     Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        modifier = Modifier
+            .fillMaxSize()
+            .height(400.dp),
+        verticalArrangement = Arrangement.spacedBy(5.dp)
     ) {
+
         Title()
         val testData = TestData()
         val books = testData.loadLocalBooks()
 
         BooksList(books = books)
+        Spacer(modifier = Modifier.height(30.dp))
     }
 }
 
@@ -43,7 +51,8 @@ fun Title() {
     Text(
         text = "В тренде",
         fontSize = 18.sp,
-        color = TextTitle
+        color = TextTitle,
+        modifier = Modifier.padding(start=20.dp)
     )
 }
 
@@ -66,7 +75,8 @@ fun BooksList(books: List<LocalBook>) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 0.dp, vertical = 200.dp), // Убираем отступы
+
+                .padding(horizontal = 0.dp, vertical = 170.dp), // Убираем отступы
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             books.takeLast(halfSize).forEach { book ->
@@ -86,27 +96,38 @@ fun BooksList(books: List<LocalBook>) {
 
 @Composable
 fun BookItem(book: LocalBook) {
+    val imageWidthPx = 199
+    val imageheightPx = 257
+    val bookBlockHeightPx = 297
+    val imageWidthDp = imageWidthPx / (densityDpi / 160f)
+    val imageheightDp = imageheightPx / (densityDpi / 160f)
+    val bookBlockHeightDp = bookBlockHeightPx / (densityDpi / 160f)
+
     Column(
         modifier = Modifier
-            .width(160.dp) // Ширина столбца (2 книги в ряду)
-            .padding(8.dp)
+            .width(130.dp) // Ширина столбца (2 книги в ряду)
+            .height(165.dp)
+            .padding(start = 15.dp, end = 13.dp)
     ) {
+
         Image(
             painter = painterResource(id = book.coverResId),
-            contentDescription = null, // Описание изображения
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
             modifier = Modifier
-                .size(120.dp) // Размер обложки книги
-                .fillMaxWidth()
-                .clip(shape = RoundedCornerShape(8.dp))
+                .size(width = 140.dp, height = 143.dp)
+
+                .clip(shape = RoundedCornerShape(15)),
+            alignment = Alignment.CenterStart
         )
-        Spacer(modifier = Modifier.height(8.dp))
         Text(
             text = book.title,
-            style = TextStyle(fontWeight = FontWeight.Bold),
+            color = SupportText,
             maxLines = 2,
-            overflow = TextOverflow.Ellipsis
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.padding(start=18.dp)
         )
-        Text(text = book.author)
+//        Text(text = book.author)
     }
 }
 

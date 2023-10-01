@@ -13,7 +13,7 @@ class TestData {
                 genre = "Genre 1",
                 pageCount = 200,
                 yearOfPublication = 2020,
-                coverResId = R.drawable.clashofkings
+                coverResId = R.drawable.one_piece
             ),
             LocalBook(
                 id = 2,
@@ -22,7 +22,7 @@ class TestData {
                 genre = "Genre 2",
                 pageCount = 250,
                 yearOfPublication = 2019,
-                coverResId = R.drawable.one_piece
+                coverResId = R.drawable.clashofkings
             ),
             LocalBook(
                 id = 3,
@@ -31,7 +31,7 @@ class TestData {
                 genre = "Genre 3",
                 pageCount = 300,
                 yearOfPublication = 2021,
-                coverResId = R.drawable.pg8jbc03
+                coverResId = R.drawable.i565152
             ),
             LocalBook(
                 id = 4,
@@ -40,7 +40,7 @@ class TestData {
                 genre = "Genre 4",
                 pageCount = 220,
                 yearOfPublication = 2018,
-                coverResId = R.drawable.i565152
+                coverResId = R.drawable.harry_potter
             ),
             LocalBook(
                 id = 5,
@@ -49,7 +49,7 @@ class TestData {
                 genre = "Genre 5",
                 pageCount = 280,
                 yearOfPublication = 2022,
-                coverResId = R.drawable.clashofkings
+                coverResId = R.drawable.i565152
             ),
             LocalBook(
                 id = 6,
@@ -58,7 +58,7 @@ class TestData {
                 genre = "Genre 6",
                 pageCount = 240,
                 yearOfPublication = 2017,
-                coverResId = R.drawable.clashofkings
+                coverResId = R.drawable.i565152
             ),
             LocalBook(
                 id = 7,
@@ -67,7 +67,7 @@ class TestData {
                 genre = "Genre 7",
                 pageCount = 190,
                 yearOfPublication = 2015,
-                coverResId = R.drawable.clashofkings
+                coverResId = R.drawable.i565152
             ),
             LocalBook(
                 id = 8,
@@ -76,7 +76,7 @@ class TestData {
                 genre = "Genre 8",
                 pageCount = 270,
                 yearOfPublication = 2023,
-                coverResId = R.drawable.clashofkings
+                coverResId = R.drawable.i565152
             ),
             LocalBook(
                 id = 9,
@@ -85,7 +85,7 @@ class TestData {
                 genre = "Genre 9",
                 pageCount = 310,
                 yearOfPublication = 2016,
-                coverResId = R.drawable.clashofkings
+                coverResId = R.drawable.i565152
             ),
             LocalBook(
                 id = 10,
@@ -94,7 +94,7 @@ class TestData {
                 genre = "Genre 10",
                 pageCount = 230,
                 yearOfPublication = 2014,
-                coverResId = R.drawable.clashofkings
+                coverResId = R.drawable.i565152
             ),
             LocalBook(
                 id = 11,
@@ -103,7 +103,7 @@ class TestData {
                 genre = "Genre 11",
                 pageCount = 260,
                 yearOfPublication = 2024,
-                coverResId = R.drawable.clashofkings
+                coverResId = R.drawable.i565152
             ),
             LocalBook(
                 id = 12,
@@ -112,7 +112,7 @@ class TestData {
                 genre = "Genre 12",
                 pageCount = 280,
                 yearOfPublication = 2022,
-                coverResId = R.drawable.clashofkings
+                coverResId = R.drawable.i565152
             ),
             LocalBook(
                 id = 13,
@@ -121,7 +121,7 @@ class TestData {
                 genre = "Genre 13",
                 pageCount = 190,
                 yearOfPublication = 2015,
-                coverResId = R.drawable.clashofkings
+                coverResId = R.drawable.i565152
             ),
             LocalBook(
                 id = 14,
@@ -130,7 +130,7 @@ class TestData {
                 genre = "Genre 14",
                 pageCount = 270,
                 yearOfPublication = 2023,
-                coverResId = R.drawable.clashofkings
+                coverResId = R.drawable.i565152
             ),
             LocalBook(
                 id = 15,
@@ -139,7 +139,7 @@ class TestData {
                 genre = "Genre 15",
                 pageCount = 310,
                 yearOfPublication = 2016,
-                coverResId = R.drawable.clashofkings
+                coverResId = R.drawable.i565152
             )
         )
     }
