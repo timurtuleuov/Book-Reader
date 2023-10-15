@@ -1,11 +1,15 @@
 package space.tuleuov.bookreader.books.model
 
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import space.tuleuov.bookreader.R
 
-class TestData {
+class BookViewModel : ViewModel() {
+    private val books: MutableLiveData<List<LocalBook>> = MutableLiveData()
 
-    fun loadLocalBooks(): List<LocalBook> {
-        return listOf(
+    init {
+        // Инициализируйте список книг, например, загрузите его из базы данных или с сервера
+        val bookList = listOf(
             LocalBook(
                 id = 1,
                 title = "One Piece",
@@ -80,7 +84,7 @@ class TestData {
             ),
             LocalBook(
                 id = 9,
-                title = "",
+                title = "Киберпанк",
                 author = "Author 9",
                 genre = "Genre 9",
                 pageCount = 310,
@@ -142,5 +146,13 @@ class TestData {
                 coverResId = R.drawable.i565152
             )
         )
+        books.value = bookList
+    }
+
+    fun getAllBooks(): List<LocalBook>?{
+        return books.value
+    }
+    fun getBookById(bookId: String): LocalBook? {
+        return books.value?.find { it.id == (bookId).toInt() }
     }
 }

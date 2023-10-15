@@ -28,9 +28,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import space.tuleuov.bookreader.R
+import space.tuleuov.bookreader.books.model.BookViewModel
 import space.tuleuov.bookreader.books.model.LocalBook
-import space.tuleuov.bookreader.books.model.TestData
 import space.tuleuov.bookreader.ui.theme.SupportText
 import space.tuleuov.bookreader.ui.theme.TextTitle
 import java.util.*
@@ -107,7 +108,7 @@ fun SearchViewPreview() {
 }
 
 @Composable
-fun BooksListPreview() {
+fun BooksListPreview(navController: NavController, viewModel: BookViewModel) {
     val textState = remember {mutableStateOf(TextFieldValue(""))}
     SearchView(textState)
     Column(
@@ -118,10 +119,13 @@ fun BooksListPreview() {
     ) {
 
         Title()
-        val testData = TestData()
-        val books = testData.loadLocalBooks()
 
-        BooksList(books = books, searchQuery = textState.value)
+        val books = viewModel.getAllBooks()
+
+
+        if (books != null) {
+            BooksList(books = books, searchQuery = textState.value, navController)
+        }
         Spacer(modifier = Modifier.height(30.dp))
     }
 
@@ -138,7 +142,7 @@ fun Title() {
 }
 
 @Composable
-fun BooksList(books: List<LocalBook>, searchQuery: TextFieldValue) {
+fun BooksList(books: List<LocalBook>, searchQuery: TextFieldValue, navController: NavController) {
     val filteredBooks = if (searchQuery.text.isEmpty()){
         books
     } else {
@@ -164,7 +168,7 @@ fun BooksList(books: List<LocalBook>, searchQuery: TextFieldValue) {
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 filteredBooks.take(halfSize).forEach { book ->
-                    BookItem(book = book)
+                    BookItem(book = book, navController)
                 }
             }
             Row(
@@ -175,7 +179,7 @@ fun BooksList(books: List<LocalBook>, searchQuery: TextFieldValue) {
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 filteredBooks.takeLast(halfSize).forEach { book ->
-                    BookItem(book = book)
+                    BookItem(book = book, navController)
                 }
             }
         }
@@ -191,7 +195,7 @@ fun BooksList(books: List<LocalBook>, searchQuery: TextFieldValue) {
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             books.take(halfSize).forEach { book ->
-                BookItem(book = book)
+                BookItem(book = book, navController)
             }
         }
         Row(
@@ -202,7 +206,7 @@ fun BooksList(books: List<LocalBook>, searchQuery: TextFieldValue) {
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             books.takeLast(halfSize).forEach { book ->
-                BookItem(book = book)
+                BookItem(book = book, navController)
             }
         }
     }
@@ -217,7 +221,7 @@ fun BooksList(books: List<LocalBook>, searchQuery: TextFieldValue) {
 
 
 @Composable
-fun BookItem(book: LocalBook) {
+fun BookItem(book: LocalBook, navController: NavController) {
     val imageWidthPx = 199
     val imageheightPx = 257
     val bookBlockHeightPx = 297
@@ -230,6 +234,9 @@ fun BookItem(book: LocalBook) {
             .width(130.dp) // Ширина столбца (2 книги в ряду)
             .height(165.dp)
             .padding(start = 15.dp, end = 13.dp)
+            .clickable {
+                navController.navigate("bookDetails/${book.id}")
+            }
     ) {
 
         Image(
