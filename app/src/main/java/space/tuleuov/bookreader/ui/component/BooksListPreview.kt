@@ -152,7 +152,7 @@ fun BooksList(books: List<LocalBook>, searchQuery: TextFieldValue) {
                 filteredBooks.add(book)
             }
         }
-        
+
         val halfSize = (filteredBooks.size + 1) / 2 // Вычисляем половину размера списка
         Box(modifier = Modifier
             .fillMaxHeight()

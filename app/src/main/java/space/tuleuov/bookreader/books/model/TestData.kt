@@ -26,9 +26,9 @@ class TestData {
             ),
             LocalBook(
                 id = 3,
-                title = "Vechera",
-                author = "Author 3",
-                genre = "Genre 3",
+                title = "Вечера на хуторе юлиз Диканьки",
+                author = "Николай Васильевич Гоголь",
+                genre = "Мистика",
                 pageCount = 300,
                 yearOfPublication = 2021,
                 coverResId = R.drawable.i565152
@@ -53,7 +53,7 @@ class TestData {
             ),
             LocalBook(
                 id = 6,
-                title = "Book 6",
+                title = "По стечению сложных обстоятельств",
                 author = "Author 6",
                 genre = "Genre 6",
                 pageCount = 240,
@@ -62,7 +62,7 @@ class TestData {
             ),
             LocalBook(
                 id = 7,
-                title = "Book 7",
+                title = "Ведьмак. Полный сборник",
                 author = "Author 7",
                 genre = "Genre 7",
                 pageCount = 190,
@@ -71,7 +71,7 @@ class TestData {
             ),
             LocalBook(
                 id = 8,
-                title = "Book 8",
+                title = "Зов Ктулху",
                 author = "Author 8",
                 genre = "Genre 8",
                 pageCount = 270,
@@ -80,7 +80,7 @@ class TestData {
             ),
             LocalBook(
                 id = 9,
-                title = "Book 9",
+                title = "Киберпанк",
                 author = "Author 9",
                 genre = "Genre 9",
                 pageCount = 310,

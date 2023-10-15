@@ -10,6 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import space.tuleuov.bookreader.ui.component.*
+import space.tuleuov.bookreader.ui.navigation.AppNavigation
 import space.tuleuov.bookreader.ui.theme.BookReaderTheme
 
 class MainActivity : ComponentActivity() {
@@ -21,20 +22,7 @@ class MainActivity : ComponentActivity() {
                 Surface(
                     color = MaterialTheme.colors.background
                 ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(top = 40.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        UserPreview()
-                        Spacer(modifier = Modifier.height(60.dp))
-
-                        Spacer(modifier = Modifier.height(20.dp))
-
-                        BooksListPreview()
-
-                    }
+                    AppNavigation()
                 }
             }
         }
