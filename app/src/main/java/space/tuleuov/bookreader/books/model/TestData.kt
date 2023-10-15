@@ -8,7 +8,7 @@ class TestData {
         return listOf(
             LocalBook(
                 id = 1,
-                title = "Book 1",
+                title = "One Piece",
                 author = "Author 1",
                 genre = "Genre 1",
                 pageCount = 200,
@@ -17,7 +17,7 @@ class TestData {
             ),
             LocalBook(
                 id = 2,
-                title = "Book 2",
+                title = "Game of Thrones",
                 author = "Author 2",
                 genre = "Genre 2",
                 pageCount = 250,
@@ -26,7 +26,7 @@ class TestData {
             ),
             LocalBook(
                 id = 3,
-                title = "Book 3",
+                title = "Vechera",
                 author = "Author 3",
                 genre = "Genre 3",
                 pageCount = 300,
@@ -35,7 +35,7 @@ class TestData {
             ),
             LocalBook(
                 id = 4,
-                title = "Book 4",
+                title = "Garry Potter",
                 author = "Author 4",
                 genre = "Genre 4",
                 pageCount = 220,
@@ -44,7 +44,7 @@ class TestData {
             ),
             LocalBook(
                 id = 5,
-                title = "Book 5",
+                title = "How i've met your Mother",
                 author = "Author 5",
                 genre = "Genre 5",
                 pageCount = 280,

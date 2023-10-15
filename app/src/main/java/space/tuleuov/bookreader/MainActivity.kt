@@ -9,7 +9,6 @@ import androidx.compose.material.Surface
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import space.tuleuov.bookreader.books.model.TestData
 import space.tuleuov.bookreader.ui.component.*
 import space.tuleuov.bookreader.ui.theme.BookReaderTheme
 
@@ -30,7 +29,7 @@ class MainActivity : ComponentActivity() {
                     ) {
                         UserPreview()
                         Spacer(modifier = Modifier.height(60.dp))
-                        SearchViewPreview()
+
                         Spacer(modifier = Modifier.height(20.dp))
 
                         BooksListPreview()

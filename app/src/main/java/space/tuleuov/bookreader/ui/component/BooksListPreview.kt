@@ -1,35 +1,115 @@
 package space.tuleuov.bookreader.ui.component
 
 import android.content.res.Resources
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Text
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import space.tuleuov.bookreader.R
 import space.tuleuov.bookreader.books.model.LocalBook
 import space.tuleuov.bookreader.books.model.TestData
 import space.tuleuov.bookreader.ui.theme.SupportText
 import space.tuleuov.bookreader.ui.theme.TextTitle
+import java.util.*
+import kotlin.collections.ArrayList
 
 val densityDpi = Resources.getSystem().displayMetrics.densityDpi
 
 @Composable
+fun SearchView(state: MutableState<TextFieldValue>) {
+    Box(
+        modifier = Modifier
+            .size(width = 327.dp, height = 49.dp)
+            .shadow(elevation = 2.dp, ambientColor = Color.Black, shape = RoundedCornerShape(45.dp))
+            .background(Color.White, shape = RoundedCornerShape(45.dp))
+    ) {
+        TextField(
+            value = state.value,
+            onValueChange = { newValue ->
+                state.value = newValue
+            },
+            placeholder = {
+                Text(text = "Поиск книг", color = Color.Gray)
+            },
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(start = 16.dp),
+            textStyle = TextStyle(color = Color.Black, fontSize = 14.sp),
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Default.Search,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .padding(15.dp)
+                        .size(24.dp)
+                )
+            },
+            trailingIcon = {
+                if (state.value.text.isNotEmpty()) {
+                    IconButton(
+                        onClick = {
+                            state.value = TextFieldValue("")
+                        }
+                    ) {
+                        Icon(
+                            Icons.Default.Close,
+                            contentDescription = null,
+                            modifier = Modifier
+                                .padding(15.dp)
+                                .size(24.dp)
+                        )
+                    }
+                }
+            },
+            singleLine = true,
+            colors = TextFieldDefaults.textFieldColors(
+                textColor = Color.Black,
+                cursorColor = Color.Black,
+                leadingIconColor = Color.Gray,
+                trailingIconColor = Color.Gray,
+                backgroundColor = Color.Transparent,
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                disabledIndicatorColor = Color.Transparent
+            )
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun SearchViewPreview() {
+    val textState = remember { mutableStateOf(TextFieldValue("")) }
+    SearchView(textState)
+}
+
+@Composable
 fun BooksListPreview() {
+    val textState = remember {mutableStateOf(TextFieldValue(""))}
+    SearchView(textState)
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -41,9 +121,10 @@ fun BooksListPreview() {
         val testData = TestData()
         val books = testData.loadLocalBooks()
 
-        BooksList(books = books)
+        BooksList(books = books, searchQuery = textState.value)
         Spacer(modifier = Modifier.height(30.dp))
     }
+
 }
 
 @Composable
@@ -57,7 +138,48 @@ fun Title() {
 }
 
 @Composable
-fun BooksList(books: List<LocalBook>) {
+fun BooksList(books: List<LocalBook>, searchQuery: TextFieldValue) {
+    val filteredBooks = if (searchQuery.text.isEmpty()){
+        books
+    } else {
+        books.filter {it.title.contains(searchQuery.text, ignoreCase = true) }
+
+        val filteredBooks = ArrayList<LocalBook>()
+        for (book in books) {
+            if (book.title.lowercase(Locale.getDefault())
+                    .contains(searchQuery.text.lowercase(Locale.getDefault()))
+            ) {
+                filteredBooks.add(book)
+            }
+        }
+        
+        val halfSize = (filteredBooks.size + 1) / 2 // Вычисляем половину размера списка
+        Box(modifier = Modifier
+            .fillMaxHeight()
+            .horizontalScroll(rememberScrollState())){
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 0.dp, vertical = 0.dp), // Убираем отступы
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
+                filteredBooks.take(halfSize).forEach { book ->
+                    BookItem(book = book)
+                }
+            }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+
+                    .padding(horizontal = 0.dp, vertical = 170.dp), // Убираем отступы
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
+                filteredBooks.takeLast(halfSize).forEach { book ->
+                    BookItem(book = book)
+                }
+            }
+        }
+    }
     val halfSize = (books.size + 1) / 2 // Вычисляем половину размера списка
     Box(modifier = Modifier
         .fillMaxHeight()
