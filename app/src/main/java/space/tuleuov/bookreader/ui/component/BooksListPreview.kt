@@ -3,8 +3,6 @@ package space.tuleuov.bookreader.ui.component
 import android.content.res.Resources
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -133,12 +131,24 @@ fun BooksListPreview(navController: NavController, viewModel: BookViewModel) {
 
 @Composable
 fun Title() {
-    Text(
-        text = "В тренде",
-        fontSize = 18.sp,
-        color = TextTitle,
-        modifier = Modifier.padding(start=20.dp)
-    )
+    Row(
+        verticalAlignment = Alignment.CenterVertically, // Выравниваем элементы по вертикали
+        modifier = Modifier.fillMaxWidth()
+    ){
+        Text(
+            text = "В тренде",
+            fontSize = 18.sp,
+            color = TextTitle,
+            modifier = Modifier.padding(start=20.dp)
+        )
+        Spacer(Modifier.weight(0.8f))
+        IconButton(onClick = { /*TODO*/ }, modifier = Modifier
+            .background(Color.Transparent)
+            .size(64.dp)) {
+            Icon(painter = painterResource(id = R.drawable.baseline_more_horiz_18), contentDescription = "")
+        }
+    }
+
 }
 
 @Composable
@@ -173,7 +183,7 @@ fun BooksList(books: List<LocalBook>, searchQuery: TextFieldValue, navController
             }
             Row(
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .fillMaxSize()
 
                     .padding(horizontal = 0.dp, vertical = 170.dp), // Убираем отступы
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -186,8 +196,10 @@ fun BooksList(books: List<LocalBook>, searchQuery: TextFieldValue, navController
     }
     val halfSize = (books.size + 1) / 2 // Вычисляем половину размера списка
     Box(modifier = Modifier
-        .fillMaxHeight()
-        .horizontalScroll(rememberScrollState())){
+        .fillMaxWidth()
+        .height(335.dp)
+        .horizontalScroll(rememberScrollState())
+    ){
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -198,12 +210,13 @@ fun BooksList(books: List<LocalBook>, searchQuery: TextFieldValue, navController
                 BookItem(book = book, navController)
             }
         }
+        Spacer(modifier = Modifier.height(100.dp))
         Row(
             modifier = Modifier
-                .fillMaxWidth()
+                .height(165.dp)
+                .align(Alignment.BottomCenter)
+                .padding(horizontal = 0.dp, vertical = 1.dp) // Убираем отступы
 
-                .padding(horizontal = 0.dp, vertical = 170.dp), // Убираем отступы
-            horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             books.takeLast(halfSize).forEach { book ->
                 BookItem(book = book, navController)
@@ -232,7 +245,7 @@ fun BookItem(book: LocalBook, navController: NavController) {
     Column(
         modifier = Modifier
             .width(130.dp) // Ширина столбца (2 книги в ряду)
-            .height(165.dp)
+            .height(170.dp)
             .padding(start = 15.dp, end = 13.dp)
             .clickable {
                 navController.navigate("bookDetails/${book.id}")
@@ -254,7 +267,7 @@ fun BookItem(book: LocalBook, navController: NavController) {
             color = SupportText,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.padding(start=18.dp)
+            modifier = Modifier.align(Alignment.CenterHorizontally)
         )
 //        Text(text = book.author)
     }
