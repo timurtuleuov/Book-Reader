@@ -17,26 +17,26 @@ import space.tuleuov.bookreader.books.model.BookViewModel
 import space.tuleuov.bookreader.books.model.LocalBook
 
 @Composable
-fun BookDetail(bookId: String, viewModel: BookViewModel){
+fun BookDetail(bookId: String, viewModel: BookViewModel, navController: NavController){
     val book = viewModel.getBookById(bookId)
     if (book != null) {
-        BookFound(book = book)
+        BookFound(book = book, navController)
     } else {
         print("Книга не найдена")
     }
 }
 
 @Composable
-fun BookFound(book: LocalBook) {
-    Navigation()
+fun BookFound(book: LocalBook, navController: NavController) {
+    Navigation(navController)
     BookInfo(book = book)
 }
 
 //Здесь должен быть navController. СЛЫШИШЬ ТИМУР?!
 @Composable
-fun Navigation() {
+fun Navigation(navController: NavController) {
     Row(modifier = Modifier.fillMaxSize()) {
-        Button(onClick = { /*TODO*/ }) {
+        Button(onClick = { navController.popBackStack() }) {
             Text(text = "назад")
         }
         Button(onClick = { /*TODO*/ }) {

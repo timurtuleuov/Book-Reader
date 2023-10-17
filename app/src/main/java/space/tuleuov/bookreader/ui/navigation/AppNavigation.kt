@@ -17,7 +17,7 @@ fun AppNavigation() {
             val bookId = backStackEntry.arguments?.getString("bookId")
             // Здесь передайте bookId в BookDetails и отобразите информацию о книге
             if (bookId != null) {
-                BookDetail(bookId, viewModel = BookViewModel())
+                BookDetail(bookId, viewModel = BookViewModel(), navController)
             }
         }
 
