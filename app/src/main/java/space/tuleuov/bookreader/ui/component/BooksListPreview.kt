@@ -8,10 +8,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -140,7 +137,7 @@ fun SearchView(state: MutableState<TextFieldValue>) {
     }
 }
 
-@Preview(showBackground = true)
+
 @Composable
 fun SearchViewPreview() {
     val textState = remember { mutableStateOf(TextFieldValue("")) }
@@ -174,23 +171,47 @@ fun BooksListPreview(navController: NavController, viewModel: BookViewModel) {
 @Composable
 fun Title() {
     Row(
-        verticalAlignment = Alignment.CenterVertically, // Выравниваем элементы по вертикали
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween
     ){
         Text(
-            text = "В тренде",
+            text = "Мои книги",
             fontSize = 18.sp,
             color = TextTitle,
             modifier = Modifier.padding(start=20.dp)
         )
-        Spacer(Modifier.weight(0.8f))
-        IconButton(onClick = { /*TODO*/ }, modifier = Modifier
-            .background(Color.Transparent)
-            .size(64.dp)) {
-            Icon(painter = painterResource(id = R.drawable.baseline_more_horiz_18), contentDescription = "")
+//        Spacer(Modifier.weight(0.5f))
+
+//        IconButton(onClick = { /*TODO*/ }, modifier = Modifier
+//            .background(Color.Transparent)
+//            .size(64.dp)) {
+//            Icon(painter = painterResource(id = R.drawable.baseline_more_horiz_18), contentDescription = "")
+//        }
+        var expanded by remember { mutableStateOf(false) }
+
+        Column(modifier = Modifier.align(Alignment.CenterVertically).padding(end = 20.dp)) {
+            Icon(
+                painter = painterResource(id = R.drawable.baseline_more_horiz_18), contentDescription = "",
+                modifier = Modifier
+                    .size(24.dp)
+                    .clickable { expanded = true }
+            )
+
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false },
+                modifier = Modifier.background(Color.White)
+            ) {
+                // Вставьте элементы меню здесь
+                DropdownMenuItem(onClick = { /* Действие при выборе первого элемента */ }) {
+                    Text("Первый элемент меню", fontSize = 16.sp)
+                }
+                DropdownMenuItem(onClick = { /* Действие при выборе второго элемента */ }) {
+                    Text("Второй элемент меню", fontSize = 16.sp)
+                }
+            }
         }
     }
-
 }
 
 @Composable
@@ -240,7 +261,7 @@ fun BookListIfLess3(books: List<LocalBook>,  navController: NavController) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 0.dp, vertical = 0.dp), // Убираем отступы
+                .padding(horizontal = 0.dp, vertical = 0.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             books.forEach { book ->
@@ -260,7 +281,7 @@ fun BookListIfLess6(books: List<LocalBook>,  navController: NavController) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 0.dp, vertical = 0.dp), // Убираем отступы
+                .padding(horizontal = 0.dp, vertical = 0.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             books.take(3).forEach { book ->
@@ -271,7 +292,7 @@ fun BookListIfLess6(books: List<LocalBook>,  navController: NavController) {
             modifier = Modifier
                 .fillMaxWidth()
                 .align(Alignment.BottomStart)
-                .padding(horizontal = 0.dp, vertical = 0.dp), // Убираем отступы
+                .padding(horizontal = 0.dp, vertical = 0.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             books.takeLast(books.size - 3).forEach { book ->
@@ -282,7 +303,7 @@ fun BookListIfLess6(books: List<LocalBook>,  navController: NavController) {
 }
 @Composable
 fun BookListIfMore6(books: List<LocalBook>,  navController: NavController) {
-    val halfSize = (books.size + 1) / 2 // Вычисляем половину размера списка
+    val halfSize = (books.size + 1) / 2
     Box(modifier = Modifier
         .fillMaxWidth()
         .height(335.dp)
@@ -291,7 +312,7 @@ fun BookListIfMore6(books: List<LocalBook>,  navController: NavController) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 0.dp, vertical = 0.dp), // Убираем отступы
+                .padding(horizontal = 0.dp, vertical = 0.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             books.slice(0 until halfSize).forEach { book ->
@@ -303,7 +324,7 @@ fun BookListIfMore6(books: List<LocalBook>,  navController: NavController) {
             modifier = Modifier
                 .height(165.dp)
                 .align(Alignment.BottomStart)
-                .padding(horizontal = 0.dp, vertical = 1.dp) // Убираем отступы
+                .padding(horizontal = 0.dp, vertical = 1.dp)
         ) {
             books.slice(halfSize until books.size).forEach { book ->
                 BookItem(book = book, navController)
@@ -312,25 +333,3 @@ fun BookListIfMore6(books: List<LocalBook>,  navController: NavController) {
 
     }
 }
-
-
-
-
-
-
-//@Composable
-//fun BookItem(book: String) {
-//    Box(
-//        modifier = Modifier
-//            .size(120.dp, 160.dp)
-//            .background(Color.Gray)
-//    ) {
-//        Text(
-//            text = book,
-//            color = Color.White,
-//            modifier = Modifier
-//                .fillMaxSize()
-//                .padding(8.dp)
-//        )
-//    }
-//}
