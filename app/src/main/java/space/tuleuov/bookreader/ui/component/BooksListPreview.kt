@@ -83,7 +83,7 @@ fun BookItem(book: LocalBook, navController: NavController) {
 fun SearchView(state: MutableState<TextFieldValue>) {
     Box(
         modifier = Modifier
-            .size(width = 327.dp, height = 49.dp)
+            .size(width = 327.dp, height = 54.dp)
             .shadow(elevation = 2.dp, ambientColor = Color.Black, shape = RoundedCornerShape(45.dp))
             .background(Color.White, shape = RoundedCornerShape(45.dp))
     ) {
@@ -93,12 +93,12 @@ fun SearchView(state: MutableState<TextFieldValue>) {
                 state.value = newValue
             },
             placeholder = {
-                Text(text = "Поиск книг", color = Color.Gray)
+                Text(text = "Поиск книг", color = Color.Gray, fontSize = 18.sp)
             },
             modifier = Modifier
                 .fillMaxSize()
-                .padding(start = 16.dp),
-            textStyle = TextStyle(color = Color.Black, fontSize = 14.sp),
+                .padding(start = 10.dp),
+            textStyle = TextStyle(color = Color.Black, fontSize = 18.sp),
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Default.Search,
