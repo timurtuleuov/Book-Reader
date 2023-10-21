@@ -37,6 +37,48 @@ import kotlin.collections.ArrayList
 
 val densityDpi = Resources.getSystem().displayMetrics.densityDpi
 
+
+
+@Composable
+fun BookItem(book: LocalBook, navController: NavController) {
+    val imageWidthPx = 199
+    val imageheightPx = 257
+    val bookBlockHeightPx = 297
+    val imageWidthDp = imageWidthPx / (densityDpi / 160f)
+    val imageheightDp = imageheightPx / (densityDpi / 160f)
+    val bookBlockHeightDp = bookBlockHeightPx / (densityDpi / 160f)
+
+    Column(
+        modifier = Modifier
+            .width(130.dp) // Ширина столбца (2 книги в ряду)
+            .height(170.dp)
+            .padding(start = 15.dp, end = 13.dp)
+            .clickable {
+                navController.navigate("bookDetails/${book.id}")
+            }
+    ) {
+
+        Image(
+            painter = painterResource(id = book.coverResId),
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .size(width = 140.dp, height = 143.dp)
+
+                .clip(shape = RoundedCornerShape(15)),
+            alignment = Alignment.CenterStart
+        )
+        Text(
+            text = book.title,
+            color = SupportText,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+        )
+//        Text(text = book.author)
+    }
+}
+
 @Composable
 fun SearchView(state: MutableState<TextFieldValue>) {
     Box(
@@ -153,10 +195,18 @@ fun Title() {
 
 @Composable
 fun BooksList(books: List<LocalBook>, searchQuery: TextFieldValue, navController: NavController) {
-    val filteredBooks = if (searchQuery.text.isEmpty()){
-        books
+    val filteredBooks = if (searchQuery.text.isEmpty()) {
+        if (books.size > 6) {
+            BookListIfMore6(books = books, navController)
+        } else {
+            if (books.size in 4..6) {
+                BookListIfLess6(books = books, navController)
+            } else {
+                BookListIfLess3(books = books, navController)
+            }
+        }
     } else {
-        books.filter {it.title.contains(searchQuery.text, ignoreCase = true) }
+        books.filter { it.title.contains(searchQuery.text, ignoreCase = true) }
 
         val filteredBooks = ArrayList<LocalBook>()
         for (book in books) {
@@ -167,33 +217,71 @@ fun BooksList(books: List<LocalBook>, searchQuery: TextFieldValue, navController
             }
         }
 
-        val halfSize = (filteredBooks.size + 1) / 2 // Вычисляем половину размера списка
-        Box(modifier = Modifier
-            .fillMaxHeight()
-            .horizontalScroll(rememberScrollState())){
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 0.dp, vertical = 0.dp), // Убираем отступы
-                horizontalArrangement = Arrangement.SpaceBetween,
-            ) {
-                filteredBooks.take(halfSize).forEach { book ->
-                    BookItem(book = book, navController)
-                }
-            }
-            Row(
-                modifier = Modifier
-                    .fillMaxSize()
-
-                    .padding(horizontal = 0.dp, vertical = 170.dp), // Убираем отступы
-                horizontalArrangement = Arrangement.SpaceBetween,
-            ) {
-                filteredBooks.takeLast(halfSize).forEach { book ->
-                    BookItem(book = book, navController)
-                }
+        if (filteredBooks.size > 6) {
+            BookListIfMore6(books = filteredBooks, navController)
+        } else {
+            if (filteredBooks.size in 4..6) {
+                BookListIfLess6(books = filteredBooks, navController)
+            } else {
+                BookListIfLess3(books = filteredBooks, navController)
             }
         }
     }
+}
+
+//Если книг меньше или равно 3
+@Composable
+fun BookListIfLess3(books: List<LocalBook>,  navController: NavController) {
+    Box(modifier = Modifier
+        .fillMaxWidth()
+        .height(335.dp)
+        .horizontalScroll(rememberScrollState())
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 0.dp, vertical = 0.dp), // Убираем отступы
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+            books.forEach { book ->
+                BookItem(book = book, navController)
+            }
+        }
+    }
+}
+
+@Composable
+fun BookListIfLess6(books: List<LocalBook>,  navController: NavController) {
+    Box(modifier = Modifier
+        .fillMaxWidth()
+        .height(335.dp)
+        .horizontalScroll(rememberScrollState())
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 0.dp, vertical = 0.dp), // Убираем отступы
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+            books.take(3).forEach { book ->
+                BookItem(book = book, navController)
+            }
+        }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.BottomStart)
+                .padding(horizontal = 0.dp, vertical = 0.dp), // Убираем отступы
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+            books.takeLast(books.size - 3).forEach { book ->
+                BookItem(book = book, navController)
+            }
+        }
+    }
+}
+@Composable
+fun BookListIfMore6(books: List<LocalBook>,  navController: NavController) {
     val halfSize = (books.size + 1) / 2 // Вычисляем половину размера списка
     Box(modifier = Modifier
         .fillMaxWidth()
@@ -206,7 +294,7 @@ fun BooksList(books: List<LocalBook>, searchQuery: TextFieldValue, navController
                 .padding(horizontal = 0.dp, vertical = 0.dp), // Убираем отступы
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
-            books.take(halfSize).forEach { book ->
+            books.slice(0 until halfSize).forEach { book ->
                 BookItem(book = book, navController)
             }
         }
@@ -214,14 +302,14 @@ fun BooksList(books: List<LocalBook>, searchQuery: TextFieldValue, navController
         Row(
             modifier = Modifier
                 .height(165.dp)
-                .align(Alignment.BottomCenter)
+                .align(Alignment.BottomStart)
                 .padding(horizontal = 0.dp, vertical = 1.dp) // Убираем отступы
-
         ) {
-            books.takeLast(halfSize).forEach { book ->
+            books.slice(halfSize until books.size).forEach { book ->
                 BookItem(book = book, navController)
             }
         }
+
     }
 }
 
@@ -229,49 +317,6 @@ fun BooksList(books: List<LocalBook>, searchQuery: TextFieldValue, navController
 
 
 
-
-
-
-
-@Composable
-fun BookItem(book: LocalBook, navController: NavController) {
-    val imageWidthPx = 199
-    val imageheightPx = 257
-    val bookBlockHeightPx = 297
-    val imageWidthDp = imageWidthPx / (densityDpi / 160f)
-    val imageheightDp = imageheightPx / (densityDpi / 160f)
-    val bookBlockHeightDp = bookBlockHeightPx / (densityDpi / 160f)
-
-    Column(
-        modifier = Modifier
-            .width(130.dp) // Ширина столбца (2 книги в ряду)
-            .height(170.dp)
-            .padding(start = 15.dp, end = 13.dp)
-            .clickable {
-                navController.navigate("bookDetails/${book.id}")
-            }
-    ) {
-
-        Image(
-            painter = painterResource(id = book.coverResId),
-            contentDescription = null,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .size(width = 140.dp, height = 143.dp)
-
-                .clip(shape = RoundedCornerShape(15)),
-            alignment = Alignment.CenterStart
-        )
-        Text(
-            text = book.title,
-            color = SupportText,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.align(Alignment.CenterHorizontally)
-        )
-//        Text(text = book.author)
-    }
-}
 
 //@Composable
 //fun BookItem(book: String) {
