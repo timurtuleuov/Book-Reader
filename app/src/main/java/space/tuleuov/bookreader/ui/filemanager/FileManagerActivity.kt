@@ -2,31 +2,32 @@ package space.tuleuov.bookreader.ui.filemanager
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Environment
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.permissions.shouldShowRationale
+import space.tuleuov.bookreader.R
 import java.io.File
+import androidx.compose.material.Checkbox
+import androidx.navigation.NavController
+import java.net.URLEncoder
 
 class FileManagerActivity : ComponentActivity() {
     private val storagePermissionCode = 101
@@ -36,29 +37,37 @@ class FileManagerActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setContent {
-            FileManagerContent(rootDirectory)
-        }
+
     }
 }
 
-@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter", "RememberReturnType")
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalPermissionsApi::class)
 @Composable
-fun FileManagerContent(rootDirectory: File) {
+fun FileManagerContent(directoryPath: String?, navController: NavController) {
+    println("привет из файл менеджера")
+    val selectedFiles = remember { mutableStateListOf<File>() }
     var fileNames by remember { mutableStateOf(listOf<String>()) }
     val permissionState = rememberPermissionState(Manifest.permission.READ_EXTERNAL_STORAGE)
 
     // Отображение списка файлов и папок
-    val fileList = rootDirectory.listFiles()
+    val directory = if (directoryPath != null) File(directoryPath) else null
+
+    val fileList = directory?.listFiles()
     fileList?.let {
         fileNames = fileList.map { it.name }
     }
-
+    val onFileSelected: (File) -> Unit = { file ->
+        if (selectedFiles.contains(file)) {
+            selectedFiles -= file
+        } else {
+            selectedFiles += file
+        }
+    }
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("File Manager") }
+                title = { Text("Файловый менеджер") }
             )
         }
     ) {
@@ -78,11 +87,48 @@ fun FileManagerContent(rootDirectory: File) {
             )
 
             if (permissionState.status.isGranted) {
-                LazyColumn {
+                LazyColumn(modifier = Modifier.fillMaxSize()) {
                     items(fileNames) { fileName ->
-                        Text(text = fileName)
+                        val file = File(directoryPath, fileName)
+
+                        val isDirectory = file.isDirectory
+
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.padding(8.dp)
+                        ) {
+                            if (!isDirectory) {
+                                Checkbox(
+                                    checked = selectedFiles.contains(file),
+                                    onCheckedChange = {
+                                        if (it) {
+                                            selectedFiles.add(file)
+                                        } else {
+                                            selectedFiles.remove(file)
+                                        }
+                                    }
+                                )
+                            }
+                            Icon(
+                                painterResource(if (isDirectory) R.drawable.ic_directory else R.drawable.ic_file),
+                                contentDescription = null
+                            )
+                            Text(
+                                text = fileName,
+                                modifier = Modifier.clickable {
+                                    if (isDirectory) {
+                                        val pathToDirectory = URLEncoder.encode(file.path, "UTF-8")
+                                        navController.navigate("fileManager/$pathToDirectory")
+                                    } else {
+                                        // Открыть файл (здесь можно добавить логику открытия файла)
+                                    }
+                                }
+                            )
+                        }
                     }
                 }
+
+
             } else {
                 Column {
                     val textToShow = if (permissionState.status.shouldShowRationale) {

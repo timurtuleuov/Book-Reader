@@ -1,6 +1,7 @@
 package space.tuleuov.bookreader.ui.component
 
 import android.content.res.Resources
+import android.os.Environment
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -29,6 +30,7 @@ import space.tuleuov.bookreader.books.model.BookViewModel
 import space.tuleuov.bookreader.books.model.LocalBook
 import space.tuleuov.bookreader.ui.theme.SupportText
 import space.tuleuov.bookreader.ui.theme.TextTitle
+import java.net.URLEncoder
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -155,7 +157,7 @@ fun BooksListPreview(navController: NavController, viewModel: BookViewModel) {
         verticalArrangement = Arrangement.spacedBy(5.dp)
     ) {
 
-        Title()
+        Title(navController)
 
         val books = viewModel.getAllBooks()
 
@@ -169,7 +171,9 @@ fun BooksListPreview(navController: NavController, viewModel: BookViewModel) {
 }
 
 @Composable
-fun Title() {
+fun Title(navController: NavController) {
+    val rootDirectory = Environment.getExternalStorageDirectory()
+    val encodedPath = URLEncoder.encode(rootDirectory.path, "UTF-8")
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween
@@ -189,7 +193,9 @@ fun Title() {
 //        }
         var expanded by remember { mutableStateOf(false) }
 
-        Column(modifier = Modifier.align(Alignment.CenterVertically).padding(end = 20.dp)) {
+        Column(modifier = Modifier
+            .align(Alignment.CenterVertically)
+            .padding(end = 20.dp)) {
             Icon(
                 painter = painterResource(id = R.drawable.baseline_more_horiz_18), contentDescription = "",
                 modifier = Modifier
@@ -203,8 +209,8 @@ fun Title() {
                 modifier = Modifier.background(Color.White)
             ) {
                 // Вставьте элементы меню здесь
-                DropdownMenuItem(onClick = { /* Действие при выборе первого элемента */ }) {
-                    Text("Первый элемент меню", fontSize = 16.sp)
+                DropdownMenuItem(onClick = { navController.navigate("fileManager/$encodedPath") }) {
+                    Text("Поиск файлов", fontSize = 16.sp)
                 }
                 DropdownMenuItem(onClick = { /* Действие при выборе второго элемента */ }) {
                     Text("Второй элемент меню", fontSize = 16.sp)
