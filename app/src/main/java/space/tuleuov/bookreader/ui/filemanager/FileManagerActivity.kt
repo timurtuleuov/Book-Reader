@@ -31,7 +31,7 @@ import java.net.URLEncoder
 
 class FileManagerActivity : ComponentActivity() {
     private val storagePermissionCode = 101
-    private val rootDirectory = Environment.getExternalStorageDirectory() // Укажите корневую директорию
+    private val rootDirectory = Environment.getExternalStorageDirectory()
 
     @OptIn(ExperimentalComposeUiApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,15 +45,14 @@ class FileManagerActivity : ComponentActivity() {
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalPermissionsApi::class)
 @Composable
 fun FileManagerContent(directoryPath: String?, navController: NavController) {
-    println("привет из файл менеджера")
     val selectedFiles = remember { mutableStateListOf<File>() }
     var fileNames by remember { mutableStateOf(listOf<String>()) }
     val permissionState = rememberPermissionState(Manifest.permission.READ_EXTERNAL_STORAGE)
 
-    // Отображение списка файлов и папок
     val directory = if (directoryPath != null) File(directoryPath) else null
 
     val fileList = directory?.listFiles()
+    println(fileList)
     fileList?.let {
         fileNames = fileList.map { it.name }
     }
@@ -76,23 +75,13 @@ fun FileManagerContent(directoryPath: String?, navController: NavController) {
                 .fillMaxSize()
                 .padding(16.dp)
         ) {
-            BasicTextField(
-                value = "",
-                onValueChange = { /*TODO: Implement search functionality */ },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 16.dp),
-                singleLine = true,
-                textStyle = TextStyle(fontSize = 18.sp)
-            )
-
             if (permissionState.status.isGranted) {
                 LazyColumn(modifier = Modifier.fillMaxSize()) {
                     items(fileNames) { fileName ->
                         val file = File(directoryPath, fileName)
 
                         val isDirectory = file.isDirectory
-
+                        println(file)
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.padding(8.dp)
