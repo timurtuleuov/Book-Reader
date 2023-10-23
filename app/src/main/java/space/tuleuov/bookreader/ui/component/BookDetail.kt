@@ -1,20 +1,32 @@
 package space.tuleuov.bookreader.ui.component
 
+import android.annotation.SuppressLint
+import android.widget.Space
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.scrollable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
-import androidx.compose.material.Text
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import space.tuleuov.bookreader.books.model.BookViewModel
 import space.tuleuov.bookreader.books.model.LocalBook
+import space.tuleuov.bookreader.ui.theme.SupportText
 
 @Composable
 fun BookDetail(bookId: String, viewModel: BookViewModel, navController: NavController){
@@ -28,41 +40,125 @@ fun BookDetail(bookId: String, viewModel: BookViewModel, navController: NavContr
 
 @Composable
 fun BookFound(book: LocalBook, navController: NavController) {
-    Navigation(navController)
-    BookInfo(book = book)
+    BookInfo(book = book, navController)
 }
 
 //Здесь должен быть navController. СЛЫШИШЬ ТИМУР?!
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun Navigation(navController: NavController) {
-    Row(modifier = Modifier.fillMaxSize()) {
-        Button(onClick = { navController.popBackStack() }) {
-            Text(text = "назад")
-        }
-        Button(onClick = { /*TODO*/ }) {
-            Text(text = "Читать")
-        }
-    }
-}
+fun BookInfo(book: LocalBook, navController: NavController) {
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Назад", tint = Color.White)
 
-@Composable
-fun BookInfo(book: LocalBook) {
-    Box( modifier = Modifier.fillMaxSize().padding(start = 25.dp, top = 100.dp)) {
+                    }
+                },
+                actions = {
+                    Button(
+                        onClick = { /* TODO: Логика открытия книги */ },
+                        modifier = Modifier.padding(8.dp),
+                    ) {
+                        Text(text = "Читать", color = Color.Yellow, fontWeight = FontWeight.ExtraBold, fontSize = 20.sp )
+                    }
+                },
+                title = { Text(text = "О документе", color = Color.White)},
+                contentColor = LocalContentColor.current
+            )
+        }
+    ) {
+        // Основное содержание экрана (содержание книги, например)
 
-        Image(
-            painter = painterResource(id = book.coverResId),
-            contentDescription = null,
-            contentScale = ContentScale.Crop,
+        Box(
             modifier = Modifier
-                .size(width = 280.dp, height = 300.dp)
+                .fillMaxSize()
+                .padding(start = 25.dp, top = 25.dp)
+        ) {
+            Column(modifier = Modifier.fillMaxSize().horizontalScroll(rememberScrollState())) {
+                Image(
+                    painter = painterResource(id = book.coverResId),
+                    contentDescription = null,
 
-                .clip(shape = RoundedCornerShape(15)),
-            alignment = Alignment.CenterStart
-        )
-        Text(text = book.title)
-        Text(text = book.author)
-        Text(text = book.genre)
-        Text(text = (book.yearOfPublication).toString())
-        Text(text = (book.pageCount).toString())
+                    modifier = Modifier
+                        .size(width = 250.dp, height = 390.dp)
+                        .clickable(onClick = { /* TODO: Логика открытия книги */ })
+                        .clip(shape = RoundedCornerShape(1)),
+                    alignment = Alignment.CenterStart
+                )
+                Text(text = book.title, fontSize = 30.sp)
+                //Здесь должен быть ряд из того что можно сделать с книгой
+
+                //
+                Box(
+                    modifier = Modifier.fillMaxWidth().
+                    clickable(
+                        onClick = { /* TODO: Изменение метаданных */ }
+                    )
+                ) {
+                    Column(modifier = Modifier.fillMaxWidth()) {
+                        Text(text = book.author, fontSize = 20.sp)
+                        Text(text = "Автор", color = SupportText)}
+                    }
+
+                Box(
+                    modifier = Modifier.
+                    clickable(
+                        onClick = { /* TODO: Изменение метаданных */ }
+                    ).fillMaxWidth()
+                ) {
+                    Column(modifier = Modifier.fillMaxWidth()) {
+                        Text(text = "Серия", color = SupportText)
+                    }
+                    }
+                Box(
+                    modifier = Modifier.
+                    clickable(
+                        onClick = { /* TODO: Изменение метаданных */ }
+                    ).fillMaxWidth()
+                ) {
+                    Column(modifier = Modifier.fillMaxWidth()) {
+                        Text(text = book.genre, fontSize = 20.sp)
+                        Text(text = "Жанр", color = SupportText)}
+                    }
+
+                Box(
+                    modifier = Modifier.
+                    clickable(
+                        onClick = { /* TODO: Изменение метаданных */ }
+                    ).fillMaxWidth()
+                ) {
+                    Column(modifier = Modifier.fillMaxWidth()) {
+                        Text(text = "Текущая закладка и время последнего чтения", color = SupportText)
+                    }
+                }
+                Box(
+                    modifier = Modifier.
+                    clickable(
+                        onClick = { /* TODO: Изменение метаданных */ }
+                    ).fillMaxWidth()
+                ) {
+                    Column(modifier = Modifier.fillMaxWidth()) {
+                        Text(text = (book.yearOfPublication).toString(), fontSize = 20.sp)
+                        Text(text = "Год издания", color = SupportText)
+                    }
+                }
+                Box(
+                    modifier = Modifier.
+                    clickable(
+                        onClick = { /* TODO: Изменение метаданных */ }
+                    ).fillMaxWidth()
+                ) {
+                    Column(modifier = Modifier.fillMaxWidth()){
+                        Text(text = "Формат и размер файла", color = SupportText)
+                    }
+                }
+
+
+                //Цитаты
+            }
+
+        }
     }
 }

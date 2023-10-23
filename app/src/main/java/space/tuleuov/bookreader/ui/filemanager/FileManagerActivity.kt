@@ -24,9 +24,14 @@ import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.permissions.shouldShowRationale
 import space.tuleuov.bookreader.R
-import java.io.File
 import androidx.compose.material.Checkbox
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavController
+import space.tuleuov.bookreader.ui.reader.fb2reader.parseFB2
+import space.tuleuov.bookreader.ui.reader.readerview.readerUI
+import java.io.*
 import java.net.URLEncoder
 
 class FileManagerActivity : ComponentActivity() {
@@ -52,7 +57,6 @@ fun FileManagerContent(directoryPath: String?, navController: NavController) {
     val directory = if (directoryPath != null) File(directoryPath) else null
 
     val fileList = directory?.listFiles()
-    println(fileList)
     fileList?.let {
         fileNames = fileList.map { it.name }
     }
@@ -66,6 +70,12 @@ fun FileManagerContent(directoryPath: String?, navController: NavController) {
     Scaffold(
         topBar = {
             TopAppBar(
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Назад", tint = Color.White)
+
+                    }
+                },
                 title = { Text("Файловый менеджер") }
             )
         }
@@ -81,7 +91,7 @@ fun FileManagerContent(directoryPath: String?, navController: NavController) {
                         val file = File(directoryPath, fileName)
 
                         val isDirectory = file.isDirectory
-                        println(file)
+
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.padding(8.dp)
@@ -110,6 +120,8 @@ fun FileManagerContent(directoryPath: String?, navController: NavController) {
                                         navController.navigate("fileManager/$pathToDirectory")
                                     } else {
                                         // Открыть файл (здесь можно добавить логику открытия файла)
+                                        val inputStream = FileInputStream(file)
+                                        readerUI(parseFB2(inputStream))
                                     }
                                 }
                             )
@@ -121,32 +133,37 @@ fun FileManagerContent(directoryPath: String?, navController: NavController) {
             } else {
                 Column {
                     val textToShow = if (permissionState.status.shouldShowRationale) {
-                        // If the user has denied the permission but the rationale can be shown,
-                        // then gently explain why the app requires this permission
                         "Вы не разрешили доступ приложению для чтения файлов"
                     } else {
-                        // If it's the first time the user lands on this feature, or the user
-                        // doesn't want to be asked again for this permission, explain that the
-                        // permission is required
-                        "Camera permission required for this feature to be available. " +
-                                "Please grant the permission"
+
+                        "Вы не предоставили доступ к файлам. " +
+                                "У вас еще есть шанс"
                     }
                     Text(textToShow)
                     Button(onClick = { permissionState.launchPermissionRequest() }) {
                         Text("Разрешить доступ")
                     }
                 }
-//                PermissionRationale(
-//                    permissionState = permissionState,
-//                    rationale = {
-//                        // Выводите пользователю объяснение, почему необходимо разрешение
-//                    },
-//                    onPermissionRequested = {
-//                        // Запросите разрешение у пользователя
-//                        permissionState.launchPermissionRequest()
-//                    }
-//                )
             }
         }
+    }
+}
+fun readFileContents(file: File): String? {
+    return try {
+        val inputStream = FileInputStream(file)
+        val inputStreamReader = InputStreamReader(inputStream)
+        val bufferedReader = BufferedReader(inputStreamReader)
+        val stringBuilder = StringBuilder()
+        var line: String?
+
+        while (bufferedReader.readLine().also { line = it } != null) {
+            stringBuilder.append(line).append("\n")
+        }
+
+        bufferedReader.close()
+        stringBuilder.toString()
+    } catch (e: IOException) {
+        // Обработка ошибки чтения файла
+        null
     }
 }
