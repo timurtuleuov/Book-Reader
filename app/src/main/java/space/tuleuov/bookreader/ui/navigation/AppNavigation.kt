@@ -10,7 +10,13 @@ import androidx.navigation.navArgument
 import space.tuleuov.bookreader.books.model.BookViewModel
 import space.tuleuov.bookreader.ui.component.BookDetail
 import space.tuleuov.bookreader.ui.filemanager.FileManagerContent
+import space.tuleuov.bookreader.ui.reader.fb2reader.FB2Book
+import space.tuleuov.bookreader.ui.reader.fb2reader.parseFB2
+import space.tuleuov.bookreader.ui.reader.readerview.readerUI
 import space.tuleuov.bookreader.ui.screens.MainPage
+import java.io.File
+import java.io.FileInputStream
+import java.io.InputStream
 
 @Composable
 fun AppNavigation() {
@@ -29,20 +35,31 @@ fun AppNavigation() {
             "fileManager/{directoryPath}",
             arguments = listOf(navArgument("directoryPath") { type = NavType.StringType; defaultValue = null; nullable = true})
         ) { backStackEntry ->
-            println("Ошибка здесь 1")
             val directoryPath = backStackEntry.arguments?.getString("directoryPath")
-            println("Ошибка здесь 2, $directoryPath, ${rootDirectory.path}")
             if (directoryPath == null) {
-                println("Ошибка здесь 3")
                 FileManagerContent(rootDirectory.path, navController)
             } else {
-                println("Ошибка здесь 4")
                 FileManagerContent(directoryPath, navController)
             }
 
         }
+        composable("readFile/{bookPath}") { backStackEntry ->
 
+            println("Ошибка 1")
+            val bookPath = backStackEntry.arguments?.getString("bookPath")
+            println("Ошибка 2")
 
+            if (bookPath != null) {
+                val file = File(bookPath)
+                val inputStream = FileInputStream(file)
+                val book = parseFB2(inputStream)
+                readerUI(book, navController)
+            } else {
+                println("Ошибка 4")
+                // Обработка ошибки, если bookPath == null
+            }
+        }
 
     }
 }
+

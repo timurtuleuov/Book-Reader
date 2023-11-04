@@ -14,39 +14,34 @@ fun parseFB2(inputStream: InputStream): FB2Book {
 
     xpp.setInput(inputStream, null)
 
+    var currentTag: String? = null
     var title: String? = null
-    var body = ""
-
-    var isTitle = false
+    var body = StringBuilder()
+    val authors = mutableListOf<String>()
 
     while (xpp.eventType != XmlPullParser.END_DOCUMENT) {
         when (xpp.eventType) {
             XmlPullParser.START_TAG -> {
-                when (xpp.name) {
-                    "title" -> {
-                        isTitle = true
-                    }
-                }
+                currentTag = xpp.name
             }
             XmlPullParser.TEXT -> {
-                if (isTitle) {
-                    title = xpp.text
-                } else {
-                    body += xpp.text
+                val text = xpp.text
+                when (currentTag) {
+                    "book-title" -> title = text
+
+                    "first-name", "middle-name", "last-name" -> authors.add(text)
                 }
-            }
-            XmlPullParser.END_TAG -> {
-                if (xpp.name == "title") {
-                    isTitle = false
+                if (currentTag == "p" || currentTag == "empty-line") {
+                    body.append(text)
                 }
             }
         }
         xpp.next()
     }
 
-    return FB2Book(title, body)
+    return FB2Book(title.toString(), authors, body.toString())
 }
 
-data class FB2Book(val title: String?, val body: String)
 
+data class FB2Book(val title: String, val authors: MutableList<String>, val body: String)
 

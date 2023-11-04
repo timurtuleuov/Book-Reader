@@ -29,6 +29,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavController
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import space.tuleuov.bookreader.ui.reader.fb2reader.FB2Book
 import space.tuleuov.bookreader.ui.reader.fb2reader.parseFB2
 import space.tuleuov.bookreader.ui.reader.readerview.readerUI
 import java.io.*
@@ -120,8 +123,13 @@ fun FileManagerContent(directoryPath: String?, navController: NavController) {
                                         navController.navigate("fileManager/$pathToDirectory")
                                     } else {
                                         // Открыть файл (здесь можно добавить логику открытия файла)
-                                        val inputStream = FileInputStream(file)
-                                        readerUI(parseFB2(inputStream))
+
+
+
+
+                                        val pathToDirectory = URLEncoder.encode(file.path, "UTF-8")
+                                        navController.navigate("readFile/${pathToDirectory}")
+
                                     }
                                 }
                             )
