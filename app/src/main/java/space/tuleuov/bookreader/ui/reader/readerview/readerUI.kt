@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Dialog
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
@@ -13,6 +14,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import space.tuleuov.bookreader.ui.reader.fb2reader.FB2Book
 import space.tuleuov.bookreader.ui.reader.fb2reader.parseFB2
@@ -31,9 +33,6 @@ import java.io.InputStream
 @Composable
 fun readerUI(book: FB2Book, navController: NavController) {
 
-    for (line in book.body.lines()){
-        println(line)
-    }
     println("Название книги ${book.title}")
 
     println("ошибка здесь 2")
@@ -52,9 +51,9 @@ fun readerUI(book: FB2Book, navController: NavController) {
             )
         }
     ) {
-        LazyColumn {
+        LazyColumn (modifier = Modifier){
             items(book.body.lines().map { it.toString() }) { line ->
-                Text(text = line)
+                Text(text = line, modifier = Modifier.padding(15.dp))
             }
         }
 

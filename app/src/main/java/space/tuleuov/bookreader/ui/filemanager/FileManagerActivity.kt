@@ -122,11 +122,7 @@ fun FileManagerContent(directoryPath: String?, navController: NavController) {
                                         val pathToDirectory = URLEncoder.encode(file.path, "UTF-8")
                                         navController.navigate("fileManager/$pathToDirectory")
                                     } else {
-                                        // Открыть файл (здесь можно добавить логику открытия файла)
-
-
-
-
+                                        // Логика отрытия файла
                                         val pathToDirectory = URLEncoder.encode(file.path, "UTF-8")
                                         navController.navigate("readFile/${pathToDirectory}")
 
