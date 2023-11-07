@@ -53,7 +53,9 @@ fun AppNavigation() {
                 val file = File(bookPath)
                 val inputStream = FileInputStream(file)
                 val book = parseFB2(inputStream)
-                readerUI(book, navController)
+                if (book != null) {
+                    readerUI(book, navController)
+                }
             } else {
                 println("Ошибка 4")
                 // Обработка ошибки, если bookPath == null
