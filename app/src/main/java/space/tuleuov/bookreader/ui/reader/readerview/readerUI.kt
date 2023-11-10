@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.fillMaxWidth
 
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
@@ -21,14 +22,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import space.tuleuov.bookreader.hyphe.Haaivin
+
 import space.tuleuov.bookreader.ui.reader.fb2reader.FB2Book
 
 
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun readerUI(book: FB2Book, navController: NavController) {
-
+fun readerUI(book: FB2Book, navController: NavController, haaivin: Haaivin) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -41,14 +43,26 @@ fun readerUI(book: FB2Book, navController: NavController) {
             )
         }
     ) {
-        LazyColumn(modifier = Modifier.fillMaxWidth()) {
+        LazyColumn() {
             items(book.chapters.drop(1)) { chapter ->
                 Text(text = chapter.title, style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 28.sp,),
                     textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth().padding(bottom = 20.dp, top = 20.dp))
                 chapter.content.lines().forEach { line ->
-                    Text(text = line, modifier = Modifier.padding(8.dp),  style = TextStyle(
-                            hyphens = Hyphens.Auto
-                            ))
+                    val hyphLine = haaivin.hyphenate(string = line, dictionaryId = "ruhyph")
+                    Text(
+
+                        text = hyphLine,
+                        modifier = Modifier.padding(horizontal = 8.dp),
+                        textAlign = TextAlign.Justify,
+                        style = TextStyle(
+                            fontSize = 18.sp,
+                            hyphens = Hyphens.Auto,
+                            lineBreak = LineBreak.Paragraph,
+
+                        ),
+
+                    )
+
                 }
 
             }

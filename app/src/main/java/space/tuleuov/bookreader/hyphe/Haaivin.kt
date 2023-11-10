@@ -4,8 +4,9 @@ import androidx.collection.LruCache
 import kotlin.math.max
 import kotlin.math.min
 
-class Hyphenation(  private val hunspellDictionaries: List<HunspellDictionary>,
-cacheItemSize: Int = 1000
+class Haaivin(
+    private val hunspellDictionaries: List<HunspellDictionary>,
+    cacheItemSize: Int = 1000
 ) {
     private val lruCache = LruCache<String, String>(cacheItemSize)
 

@@ -8,6 +8,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import space.tuleuov.bookreader.books.model.BookViewModel
+import space.tuleuov.bookreader.hyphe.Haaivin
 import space.tuleuov.bookreader.ui.component.BookDetail
 import space.tuleuov.bookreader.ui.filemanager.FileManagerContent
 import space.tuleuov.bookreader.ui.reader.fb2reader.FB2Book
@@ -19,7 +20,7 @@ import java.io.FileInputStream
 import java.io.InputStream
 
 @Composable
-fun AppNavigation() {
+fun AppNavigation(haaivin: Haaivin) {
     val rootDirectory = Environment.getExternalStorageDirectory()
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = "mainPage") {
@@ -54,7 +55,7 @@ fun AppNavigation() {
                 val inputStream = FileInputStream(file)
                 val book = parseFB2(inputStream)
                 if (book != null) {
-                    readerUI(book, navController)
+                    readerUI(book, navController, haaivin)
                 }
             } else {
                 println("Ошибка 4")
