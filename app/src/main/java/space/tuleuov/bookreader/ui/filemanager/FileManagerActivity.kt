@@ -4,6 +4,7 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.os.Environment
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -28,6 +29,7 @@ import androidx.compose.material.Checkbox
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -56,7 +58,7 @@ fun FileManagerContent(directoryPath: String?, navController: NavController) {
     val selectedFiles = remember { mutableStateListOf<File>() }
     var fileNames by remember { mutableStateOf(listOf<String>()) }
     val permissionState = rememberPermissionState(Manifest.permission.READ_EXTERNAL_STORAGE)
-
+    val context  = LocalContext.current
     val directory = if (directoryPath != null) File(directoryPath) else null
 
     val fileList = directory?.listFiles()
@@ -83,6 +85,10 @@ fun FileManagerContent(directoryPath: String?, navController: NavController) {
             )
         }
     ) {
+        if (directoryPath != null) {
+            Text(text = directoryPath, modifier = Modifier.padding(horizontal = 20.dp))
+        }
+        Spacer(modifier = Modifier.padding(vertical = 25.dp))
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -123,8 +129,13 @@ fun FileManagerContent(directoryPath: String?, navController: NavController) {
                                         navController.navigate("fileManager/$pathToDirectory")
                                     } else {
                                         // Логика отрытия файла
+
                                         val pathToDirectory = URLEncoder.encode(file.path, "UTF-8")
-                                        navController.navigate("readFile/${pathToDirectory}")
+                                        if (file.extension == "fb2"){
+                                            navController.navigate("readFile/${pathToDirectory}")
+                                        } else {
+                                            Toast.makeText(context, "Нельзя открыть этот файл", Toast.LENGTH_LONG).show()
+                                        }
 
                                     }
                                 }
@@ -150,24 +161,5 @@ fun FileManagerContent(directoryPath: String?, navController: NavController) {
                 }
             }
         }
-    }
-}
-fun readFileContents(file: File): String? {
-    return try {
-        val inputStream = FileInputStream(file)
-        val inputStreamReader = InputStreamReader(inputStream)
-        val bufferedReader = BufferedReader(inputStreamReader)
-        val stringBuilder = StringBuilder()
-        var line: String?
-
-        while (bufferedReader.readLine().also { line = it } != null) {
-            stringBuilder.append(line).append("\n")
-        }
-
-        bufferedReader.close()
-        stringBuilder.toString()
-    } catch (e: IOException) {
-        // Обработка ошибки чтения файла
-        null
     }
 }
