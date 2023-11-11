@@ -32,6 +32,7 @@ fun parseFB2(inputStream: InputStream): FB2Book? {
                 if (currentTag == "title") {
                     currentChapterTitle = ""
                     currentChapterContent = StringBuilder()
+                    currentChapterContent.append("\t")
                 }
             }
             XmlPullParser.TEXT -> {
