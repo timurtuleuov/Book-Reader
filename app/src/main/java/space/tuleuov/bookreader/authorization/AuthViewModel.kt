@@ -1,36 +1,55 @@
 package space.tuleuov.bookreader.authorization
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import androidx.compose.runtime.State
+
 import androidx.lifecycle.ViewModel
+import space.tuleuov.bookreader.ui.authorization.data.LoginState
+import space.tuleuov.bookreader.ui.authorization.data.TextFieldState
+import androidx.compose.runtime.mutableStateOf
+import space.tuleuov.bookreader.ui.authorization.data.RegistrationState
 
 class AuthViewModel : ViewModel() {
 
-    private val _isUserLoggedIn = MutableLiveData<Boolean>()
-    val isUserLoggedIn: LiveData<Boolean>
-        get() = _isUserLoggedIn
+    private val _emailState = mutableStateOf(TextFieldState())
+    val emailState: State<TextFieldState> = _emailState
 
-    init {
-        // Здесь вы можете выполнить проверку состояния авторизации, например, из SharedPreferences
-        // Предположим, что true означает, что пользователь авторизован
-        _isUserLoggedIn.value = checkUserAuthenticationStatus()
+    private val _passwordState = mutableStateOf(TextFieldState(isPassword = true))
+    val passwordState: State<TextFieldState> = _passwordState
+
+    private val _loginState = mutableStateOf(LoginState())
+    val loginState: State<LoginState> = _loginState
+    private val _nameState = mutableStateOf(TextFieldState())
+    val nameState: State<TextFieldState> = _nameState
+
+
+    private val _confirmPasswordState = mutableStateOf(TextFieldState(isPassword = true))
+    val confirmPasswordState: State<TextFieldState> = _confirmPasswordState
+
+    private val _registrationState = mutableStateOf(RegistrationState())
+    val registrationState: State<RegistrationState> = _registrationState
+
+    // Другие необходимые методы для управления состоянием
+
+    fun setName(name: String) {
+        _nameState.value = _nameState.value.copy(text = name, error = null)
     }
 
+    fun setEmail(email: String) {
+        _emailState.value = _emailState.value.copy(text = email, error = null)
+    }
+
+    fun setPassword(password: String) {
+        _passwordState.value = _passwordState.value.copy(text = password, error = null)
+    }
+
+    fun setConfirmPassword(confirmPassword: String) {
+        _confirmPasswordState.value = _confirmPasswordState.value.copy(text = confirmPassword, error = null)
+    }
+
+    fun registerUser() {
+        // Логика регистрации пользователя
+    }
     fun loginUser() {
-        // Логика входа пользователя
-        // После успешного входа обновите состояние
-        _isUserLoggedIn.value = true
-    }
-
-    fun logoutUser() {
-        // Логика выхода пользователя
-        // После успешного выхода обновите состояние
-        _isUserLoggedIn.value = false
-    }
-
-    private fun checkUserAuthenticationStatus(): Boolean {
-        // Логика проверки состояния авторизации, например, из SharedPreferences
-        // Возвращайте true, если пользователь авторизован, иначе false
-        return false
+        // Логика аутентификации
     }
 }

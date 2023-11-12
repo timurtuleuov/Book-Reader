@@ -9,6 +9,8 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import space.tuleuov.bookreader.books.model.BookViewModel
 import space.tuleuov.bookreader.hyphe.Haaivin
+import space.tuleuov.bookreader.ui.authorization.LoginScreen
+import space.tuleuov.bookreader.ui.authorization.RegisterScreen
 import space.tuleuov.bookreader.ui.component.BookDetail
 import space.tuleuov.bookreader.ui.filemanager.FileManagerContent
 import space.tuleuov.bookreader.ui.reader.fb2reader.FB2Book
@@ -23,7 +25,9 @@ import java.io.InputStream
 fun AppNavigation(haaivin: Haaivin) {
     val rootDirectory = Environment.getExternalStorageDirectory()
     val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = "mainPage") {
+    NavHost(navController = navController, startDestination = "login") {
+        composable("login") { LoginScreen(navController)}
+        composable("registration"){ RegisterScreen(navController)}
         composable("mainPage") { MainPage(navController) }
         composable("bookDetails/{bookId}") { backStackEntry ->
             val bookId = backStackEntry.arguments?.getString("bookId")
