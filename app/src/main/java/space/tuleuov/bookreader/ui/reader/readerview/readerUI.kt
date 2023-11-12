@@ -51,7 +51,7 @@ fun readerUI(book: FB2Book, navController: NavController, haaivin: Haaivin) {
                     val hyphLine = haaivin.hyphenate(string = line, dictionaryId = "ruhyph")
                     Text(
 
-                        text = "\t\t\t"+ hyphLine,
+                        text = "      "+ hyphLine,
                         modifier = Modifier.padding(horizontal = 8.dp),
                         textAlign = TextAlign.Justify,
                         style = TextStyle(
