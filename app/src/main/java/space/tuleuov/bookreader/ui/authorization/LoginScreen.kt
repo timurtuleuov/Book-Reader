@@ -1,6 +1,7 @@
 package space.tuleuov.bookreader.ui.authorization
 
 import android.annotation.SuppressLint
+import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -16,6 +17,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontFamily
@@ -40,8 +42,7 @@ import space.tuleuov.bookreader.authorization.AuthViewModel
 fun LoginScreen(
     navController: NavController,
     viewModel: AuthViewModel = viewModel()) {
-    // ... Ваши import'ы
-
+    val context  = LocalContext.current
     val emailState by viewModel.emailState
     val passwordState by viewModel.passwordState
     val loginState by viewModel.loginState
@@ -154,7 +155,15 @@ fun LoginScreen(
                 }
                 // Кнопка для входа
                 Button(
-                    onClick = { viewModel.loginUser() },
+                    onClick = {
+                        val user = viewModel.loginUser(emailState.text, passwordState.text)
+                        if (user != null) {
+                            navController.navigate("mainPage")
+                            // Пользователь успешно аутентифицирован, выполните соответствующие действия
+                        } else {
+                            // Пользователь не найден, выполните соответствующие действия
+                            Toast.makeText(context, "Такого пользователя нет", Toast.LENGTH_LONG).show()
+                        }},
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(8.dp)

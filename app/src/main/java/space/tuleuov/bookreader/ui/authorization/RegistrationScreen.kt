@@ -121,15 +121,7 @@ fun RegisterScreen(
                     }
                 }
 
-                // Кнопка для регистрации
-                Button(
-                    onClick = { viewModel.registerUser() },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp)
-                ) {
-                    Text("Зарегистрироваться")
-                }
+
 
                 // Кнопка для возврата к экрану входа
                 TextButton(
@@ -156,6 +148,15 @@ fun RegisterScreen(
                         fontFamily = FontFamily.SansSerif,
                         textAlign = TextAlign.Center
                     )
+                }
+                // Кнопка для регистрации
+                Button(
+                    onClick = { viewModel.registerUser() },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp)
+                ) {
+                    Text("Зарегистрироваться")
                 }
             }
         }

@@ -6,9 +6,15 @@ import androidx.lifecycle.ViewModel
 import space.tuleuov.bookreader.ui.authorization.data.LoginState
 import space.tuleuov.bookreader.ui.authorization.data.TextFieldState
 import androidx.compose.runtime.mutableStateOf
+import dagger.hilt.android.lifecycle.HiltViewModel
+import space.tuleuov.bookreader.db.entity.User
+import space.tuleuov.bookreader.db.repositiry.UserRepository
 import space.tuleuov.bookreader.ui.authorization.data.RegistrationState
+import javax.inject.Inject
 
-class AuthViewModel : ViewModel() {
+
+//class AuthViewModel constructor(private val userRepository: UserRepository) : ViewModel() {
+class AuthViewModel constructor() : ViewModel() {
 
     private val _emailState = mutableStateOf(TextFieldState())
     val emailState: State<TextFieldState> = _emailState
@@ -49,7 +55,10 @@ class AuthViewModel : ViewModel() {
     fun registerUser() {
         // Логика регистрации пользователя
     }
-    fun loginUser() {
+    fun loginUser(email: String, password: String) {
         // Логика аутентификации
+//        suspend fun loginUser(email: String, password: String): User? {
+//            return userRepository.loginUser(email, password)
+//        }
     }
 }
