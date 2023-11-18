@@ -2,6 +2,7 @@ package space.tuleuov.bookreader.ui.authorization
 
 import androidx.compose.runtime.*
 import android.annotation.SuppressLint
+import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
@@ -17,6 +18,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontFamily
@@ -38,7 +40,8 @@ fun RegisterScreen(
     navController: NavController,
     viewModel: AuthViewModel = viewModel()
 ) {
-    // ... Ваши import'ы
+    val context  = LocalContext.current
+
     val nameState by viewModel.nameState
     val emailState by viewModel.emailState
     val passwordState by viewModel.passwordState
@@ -160,7 +163,22 @@ fun RegisterScreen(
                 }
                 // Кнопка для регистрации
                 Button(
-                    onClick = { viewModel.registerUser(nameState.text, emailState.text, passwordState.text) },
+                    onClick = {
+                        registrationState.isLoading = true
+                        val result = viewModel.registerUser(nameState.text, emailState.text, passwordState.text)
+                        if (result) {
+                            registrationState.isError = false
+                            registrationState.isSuccess = true
+                            registrationState.isLoading = false
+                            navController.navigate("login")
+                            println("User has been created")
+                        } else{
+
+                            registrationState.isError = true
+                            Toast.makeText(context, "Пользователь с таким email уже существует", Toast.LENGTH_LONG).show()
+                            println("User hasn't been created :(")
+                        }
+                              },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(8.dp)

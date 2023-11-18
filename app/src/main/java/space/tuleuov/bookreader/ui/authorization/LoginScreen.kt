@@ -157,12 +157,10 @@ fun LoginScreen(
                 Button(
                     onClick = {
                         val user = viewModel.loginUser(emailState.text, passwordState.text)
-                        if (user != null) {
-                            navController.navigate("mainPage")
-                            // Пользователь успешно аутентифицирован, выполните соответствующие действия
-                        } else {
-                            // Пользователь не найден, выполните соответствующие действия
+                        if (user == null) {
                             Toast.makeText(context, "Такого пользователя нет", Toast.LENGTH_LONG).show()
+                        } else {
+                            navController.navigate("mainPage")
                         }},
                     modifier = Modifier
                         .fillMaxWidth()
