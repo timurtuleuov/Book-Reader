@@ -1,20 +1,29 @@
 package space.tuleuov.bookreader.authorization
 
+import android.app.Application
+import android.util.Log
 import androidx.compose.runtime.State
 
 import androidx.lifecycle.ViewModel
 import space.tuleuov.bookreader.ui.authorization.data.LoginState
 import space.tuleuov.bookreader.ui.authorization.data.TextFieldState
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.AndroidViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import space.tuleuov.bookreader.BookReaderApp
+import space.tuleuov.bookreader.db.Database
 import space.tuleuov.bookreader.db.entity.User
-import space.tuleuov.bookreader.db.repositiry.UserRepository
 import space.tuleuov.bookreader.ui.authorization.data.RegistrationState
 import javax.inject.Inject
 
 
 //class AuthViewModel constructor(private val userRepository: UserRepository) : ViewModel() {
-class AuthViewModel constructor() : ViewModel() {
+
+class AuthViewModel(
+    app: Application
+) : AndroidViewModel(app) {
+    private val db = (app as BookReaderApp).database
+
 
     private val _emailState = mutableStateOf(TextFieldState())
     val emailState: State<TextFieldState> = _emailState
@@ -52,13 +61,20 @@ class AuthViewModel constructor() : ViewModel() {
         _confirmPasswordState.value = _confirmPasswordState.value.copy(text = confirmPassword, error = null)
     }
 
-    fun registerUser() {
+    fun registerUser(name: String, email: String, password: String) {
+        val newUser = User(uid = 1, name = name, email = email, password = password, level=1, avatar = "", status = "")
+        db.userDao().insert(newUser)
+
+
         // Логика регистрации пользователя
     }
-    fun loginUser(email: String, password: String) {
+    fun loginUser(email: String, password: String): User? {
         // Логика аутентификации
-//        suspend fun loginUser(email: String, password: String): User? {
-//            return userRepository.loginUser(email, password)
-//        }
+        val user = db.userDao().getUserByEmailAndPassword(email, password)
+        if (user != null){
+            println("Все четко")
+        }
+        return user
     }
 }
+

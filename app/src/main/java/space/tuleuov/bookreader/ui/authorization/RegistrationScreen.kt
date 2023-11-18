@@ -39,7 +39,7 @@ fun RegisterScreen(
     viewModel: AuthViewModel = viewModel()
 ) {
     // ... Ваши import'ы
-
+    val nameState by viewModel.nameState
     val emailState by viewModel.emailState
     val passwordState by viewModel.passwordState
     val registrationState by viewModel.registrationState
@@ -74,7 +74,16 @@ fun RegisterScreen(
                 )
                 Spacer(modifier = Modifier.height(32.dp))
 
-                // Пример использования OutlinedTextField для email
+                OutlinedTextField(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp),
+                    value = nameState.text,
+                    onValueChange = { viewModel.setName(it) },
+                    label = { Text("Имя") },
+                    isError = nameState.error != null
+                )
+
                 OutlinedTextField(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -151,7 +160,7 @@ fun RegisterScreen(
                 }
                 // Кнопка для регистрации
                 Button(
-                    onClick = { viewModel.registerUser() },
+                    onClick = { viewModel.registerUser(nameState.text, emailState.text, passwordState.text) },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(8.dp)
