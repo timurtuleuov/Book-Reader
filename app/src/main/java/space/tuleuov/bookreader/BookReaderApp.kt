@@ -16,7 +16,9 @@ class BookReaderApp: Application() {
             applicationContext,
             Database::class.java,
             "bookReader"
-        ).allowMainThreadQueries()
+        )
+            .allowMainThreadQueries()
+            .fallbackToDestructiveMigration()
             .build()
     }
 

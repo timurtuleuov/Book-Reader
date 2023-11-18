@@ -1,5 +1,7 @@
 package space.tuleuov.bookreader.ui.component
 
+import android.annotation.SuppressLint
+import android.app.Application
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -16,36 +18,51 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import coil.compose.rememberImagePainter
+import space.tuleuov.bookreader.ui.authorization.UserPreferences
 import space.tuleuov.bookreader.ui.theme.SupportText
 
 @Composable
-fun UserPreview() {
+fun UserPreview(app: Application) {
+    val userPreferences =  UserPreferences(app)
+    val savedUser = userPreferences.getUser()
     Row(
         modifier = Modifier
             .size(width = 320.dp, height = 60.dp)
             .padding(0.dp)
     ) {
-        UserAvatar()
-        UserName("Timur Tuleuov")
+        savedUser?.avatar?.let { UserAvatar(it) }
+        if (savedUser != null) {
+            UserName(savedUser.name)
+        }
         Spacer(modifier = Modifier.width(100.dp))
         UserStatsButton()
     }
 
 }
 
+@SuppressLint("ResourceType")
 @Composable
-fun UserAvatar() {
+fun UserAvatar(avatar: String) {
     Card(
         modifier = Modifier
             .size(60.dp),
-            shape = CircleShape,
+        shape = CircleShape,
         backgroundColor = Color.Black
     ) {
-        Image(
-            painterResource(id = R.drawable.ava),
-            contentDescription = "",
-            contentScale = ContentScale.Crop
+        if (avatar != "") {
+            Image(
+                painter = rememberImagePainter(avatar),
+                contentDescription = null,
+                contentScale = ContentScale.Crop
             )
+        } else {
+            Image(
+                painterResource(id = R.drawable.ava),
+                contentDescription = "",
+                contentScale = ContentScale.Crop
+            )
+        }
     }
 }
 

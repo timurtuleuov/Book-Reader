@@ -17,7 +17,8 @@ import space.tuleuov.bookreader.db.entity.Statistics
         Book::class,
         Statistics::class
     ],
-    version = 1
+    version = 3,
+    exportSchema = true
 )
 @TypeConverters(Converter::class)
 abstract class Database : RoomDatabase() {

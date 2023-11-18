@@ -2,6 +2,7 @@ package space.tuleuov.bookreader.ui.filemanager
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Application
 import android.os.Bundle
 import android.os.Environment
 import android.widget.Toast
@@ -29,15 +30,21 @@ import androidx.compose.material.Checkbox
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import space.tuleuov.bookreader.BookReaderApp
+import space.tuleuov.bookreader.db.entity.Book
+import space.tuleuov.bookreader.ui.authorization.UserPreferences
 import space.tuleuov.bookreader.ui.reader.fb2reader.FB2Book
 import space.tuleuov.bookreader.ui.reader.fb2reader.parseFB2
 import space.tuleuov.bookreader.ui.reader.readerview.readerUI
 import java.io.*
 import java.net.URLEncoder
+import java.time.LocalDate
+import java.time.LocalDateTime
 
 class FileManagerActivity : ComponentActivity() {
     private val storagePermissionCode = 101
@@ -54,7 +61,12 @@ class FileManagerActivity : ComponentActivity() {
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter", "RememberReturnType")
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalPermissionsApi::class)
 @Composable
-fun FileManagerContent(directoryPath: String?, navController: NavController) {
+fun FileManagerContent(directoryPath: String?, navController: NavController, app: Application) {
+    val db = (app as BookReaderApp).database
+
+    val userPreferences =  UserPreferences(app)
+    val savedUser = userPreferences.getUser()
+
     val selectedFiles = remember { mutableStateListOf<File>() }
     var fileNames by remember { mutableStateOf(listOf<String>()) }
     val permissionState = rememberPermissionState(Manifest.permission.READ_EXTERNAL_STORAGE)
@@ -132,7 +144,29 @@ fun FileManagerContent(directoryPath: String?, navController: NavController) {
 
                                         val pathToDirectory = URLEncoder.encode(file.path, "UTF-8")
                                         if (file.extension == "fb2"){
-                                            navController.navigate("readFile/${pathToDirectory}")
+                                            val existingBook = db.bookDao().getBookByFileLocation(pathToDirectory)
+                                            if (existingBook == null) {
+                                                val book = parseFB2(FileInputStream(file))
+                                                if (book != null && savedUser != null) {
+                                                    db.bookDao().insert(
+                                                        Book(
+                                                            fileLocation = pathToDirectory,
+                                                            bookName = book.title,
+                                                            userId = savedUser.uid,
+                                                            lastOpenedTime = System.currentTimeMillis(),
+                                                            author = book.authors.joinToString(),
+                                                            annotation = "",
+                                                            series = "",
+                                                            cover = "",
+                                                            genre = "",
+                                                            bookmark = ""
+                                                        )
+                                                    )
+                                                }
+                                                navController.navigate("readFile/${pathToDirectory}")
+                                            } else{
+                                                navController.navigate("readFile/${pathToDirectory}")
+                                            }
                                         } else {
                                             Toast.makeText(context, "Нельзя открыть этот файл", Toast.LENGTH_LONG).show()
                                         }

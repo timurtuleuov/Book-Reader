@@ -24,7 +24,7 @@ import javax.inject.Inject
 
 class AuthViewModel(
     app: Application,
-    
+
 ) : AndroidViewModel(app) {
     private val db = (app as BookReaderApp).database
     private val userPreferences =  UserPreferences(app)

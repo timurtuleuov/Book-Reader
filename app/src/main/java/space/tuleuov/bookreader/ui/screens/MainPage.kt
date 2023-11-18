@@ -1,5 +1,6 @@
 package space.tuleuov.bookreader.ui.screens
 
+import android.app.Application
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -11,14 +12,14 @@ import space.tuleuov.bookreader.ui.component.BooksListPreview
 import space.tuleuov.bookreader.ui.component.UserPreview
 
 @Composable
-fun MainPage(navController: NavController) {
+fun MainPage(navController: NavController, app: Application) {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(top = 40.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        UserPreview()
+        UserPreview(app)
         Spacer(modifier = Modifier.height(60.dp))
 
         Spacer(modifier = Modifier.height(20.dp))

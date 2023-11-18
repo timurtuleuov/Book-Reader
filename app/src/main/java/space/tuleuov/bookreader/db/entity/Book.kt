@@ -1,9 +1,6 @@
 package space.tuleuov.bookreader.db.entity
 
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.ForeignKey
-import androidx.room.PrimaryKey
+import androidx.room.*
 
 @Entity(
     tableName = "book",
@@ -12,10 +9,11 @@ import androidx.room.PrimaryKey
         parentColumns = ["uid"],
         childColumns = ["user_id"],
         onDelete = ForeignKey.CASCADE
-    )]
+    )],
+    indices = [Index(value = ["file_location"], unique = true)]
 )
 data class Book(
-    @PrimaryKey(autoGenerate = true) val id: Int,
+    @PrimaryKey(autoGenerate = true) val id: Int = 0,
 
     @ColumnInfo(name = "file_location")
     val fileLocation: String,
@@ -42,7 +40,7 @@ data class Book(
     val lastOpenedTime: Long,
 
     @ColumnInfo(name = "cover")
-    val cover: String,
+    val cover: String?,
 
     @ColumnInfo(name = "genre")
     val genre: String?

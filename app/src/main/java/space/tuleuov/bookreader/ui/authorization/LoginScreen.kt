@@ -153,10 +153,12 @@ fun LoginScreen(
                         textAlign = TextAlign.Center
                     )
                 }
-                // Кнопка для входа
                 Button(
                     onClick = {
                         val user = viewModel.loginUser(emailState.text, passwordState.text)
+                        if (emailState.text == "" && passwordState.text == ""){
+                            Toast.makeText(context, "У вас не заполнены поля авторизации", Toast.LENGTH_LONG).show()
+                        }
                         if (user == null) {
                             Toast.makeText(context, "Такого пользователя нет", Toast.LENGTH_LONG).show()
                         } else {

@@ -1,7 +1,9 @@
 package space.tuleuov.bookreader.ui.navigation
 
+import android.app.Application
 import android.os.Environment
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -28,7 +30,7 @@ fun AppNavigation(haaivin: Haaivin) {
     NavHost(navController = navController, startDestination = "login") {
         composable("login") { LoginScreen(navController)}
         composable("registration"){ RegisterScreen(navController)}
-        composable("mainPage") { MainPage(navController) }
+        composable("mainPage") { MainPage(navController, app = LocalContext.current.applicationContext as Application) }
         composable("bookDetails/{bookId}") { backStackEntry ->
             val bookId = backStackEntry.arguments?.getString("bookId")
             // Здесь передайте bookId в BookDetails и отобразите информацию о книге
@@ -42,9 +44,9 @@ fun AppNavigation(haaivin: Haaivin) {
         ) { backStackEntry ->
             val directoryPath = backStackEntry.arguments?.getString("directoryPath")
             if (directoryPath == null) {
-                FileManagerContent(rootDirectory.path, navController)
+                FileManagerContent(rootDirectory.path, navController, app = LocalContext.current.applicationContext as Application)
             } else {
-                FileManagerContent(directoryPath, navController)
+                FileManagerContent(directoryPath, navController, app = LocalContext.current.applicationContext as Application)
             }
 
         }
