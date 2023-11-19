@@ -1,7 +1,6 @@
 package space.tuleuov.bookreader.db.entity
 
 import androidx.room.*
-import java.time.LocalDate
 import java.time.LocalDateTime
 
 @Entity(

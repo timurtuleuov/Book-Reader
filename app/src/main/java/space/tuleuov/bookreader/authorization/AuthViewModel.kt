@@ -70,8 +70,6 @@ class AuthViewModel(
         if (isUserWithEmailExists(email)) {
             return false
         }
-
-        // If the user doesn't exist, proceed with registration
         val newUser = User(name = name, email = email, password = password, level = 1, avatar = "", status = "")
         db.userDao().insert(newUser)
         return true

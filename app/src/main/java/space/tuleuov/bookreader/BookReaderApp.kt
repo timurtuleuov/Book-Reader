@@ -9,7 +9,6 @@ class BookReaderApp: Application() {
 
     lateinit var database: Database
 
-
     override fun onCreate() {
         super.onCreate()
         database = Room.databaseBuilder(

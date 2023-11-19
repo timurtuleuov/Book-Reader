@@ -13,6 +13,7 @@ import space.tuleuov.bookreader.books.model.BookViewModel
 import space.tuleuov.bookreader.hyphe.Haaivin
 import space.tuleuov.bookreader.ui.authorization.LoginScreen
 import space.tuleuov.bookreader.ui.authorization.RegisterScreen
+import space.tuleuov.bookreader.ui.authorization.UserPreferences
 import space.tuleuov.bookreader.ui.component.BookDetail
 import space.tuleuov.bookreader.ui.filemanager.FileManagerContent
 import space.tuleuov.bookreader.ui.reader.fb2reader.FB2Book
@@ -25,12 +26,22 @@ import java.io.InputStream
 
 @Composable
 fun AppNavigation(haaivin: Haaivin) {
+    val app = LocalContext.current.applicationContext as Application
+    val userPreferences =  UserPreferences(app)
+    val savedUser = userPreferences.getUser()
     val rootDirectory = Environment.getExternalStorageDirectory()
     val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = "login") {
+    var startDestination = if (savedUser == null) {
+        "login"
+    }
+    else {
+        "mainPage"
+    }
+    NavHost(navController = navController, startDestination = startDestination) {
+
         composable("login") { LoginScreen(navController)}
         composable("registration"){ RegisterScreen(navController)}
-        composable("mainPage") { MainPage(navController, app = LocalContext.current.applicationContext as Application) }
+        composable("mainPage") { MainPage(navController, app = app) }
         composable("bookDetails/{bookId}") { backStackEntry ->
             val bookId = backStackEntry.arguments?.getString("bookId")
             // Здесь передайте bookId в BookDetails и отобразите информацию о книге
@@ -44,9 +55,9 @@ fun AppNavigation(haaivin: Haaivin) {
         ) { backStackEntry ->
             val directoryPath = backStackEntry.arguments?.getString("directoryPath")
             if (directoryPath == null) {
-                FileManagerContent(rootDirectory.path, navController, app = LocalContext.current.applicationContext as Application)
+                FileManagerContent(rootDirectory.path, navController, app = app)
             } else {
-                FileManagerContent(directoryPath, navController, app = LocalContext.current.applicationContext as Application)
+                FileManagerContent(directoryPath, navController, app = app)
             }
 
         }
