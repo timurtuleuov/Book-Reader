@@ -18,16 +18,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import space.tuleuov.bookreader.R
 import space.tuleuov.bookreader.books.model.BookViewModel
-import space.tuleuov.bookreader.books.model.LocalBook
+import space.tuleuov.bookreader.db.entity.Book
 import space.tuleuov.bookreader.ui.theme.SupportText
 import space.tuleuov.bookreader.ui.theme.TextTitle
 import java.net.URLEncoder
@@ -39,17 +37,10 @@ val densityDpi = Resources.getSystem().displayMetrics.densityDpi
 
 
 @Composable
-fun BookItem(book: LocalBook, navController: NavController) {
-    val imageWidthPx = 199
-    val imageheightPx = 257
-    val bookBlockHeightPx = 297
-    val imageWidthDp = imageWidthPx / (densityDpi / 160f)
-    val imageheightDp = imageheightPx / (densityDpi / 160f)
-    val bookBlockHeightDp = bookBlockHeightPx / (densityDpi / 160f)
-
+fun BookItem(book: Book, navController: NavController) {
     Column(
         modifier = Modifier
-            .width(130.dp) // Ширина столбца (2 книги в ряду)
+            .width(130.dp)
             .height(170.dp)
             .padding(start = 15.dp, end = 13.dp)
             .clickable {
@@ -58,7 +49,7 @@ fun BookItem(book: LocalBook, navController: NavController) {
     ) {
 
         Image(
-            painter = painterResource(id = book.coverResId),
+            painter = painterResource(id = R.drawable.one_piece),
             contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier = Modifier
@@ -68,13 +59,12 @@ fun BookItem(book: LocalBook, navController: NavController) {
             alignment = Alignment.CenterStart
         )
         Text(
-            text = book.title,
+            text = book.bookName,
             color = SupportText,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.align(Alignment.CenterHorizontally)
         )
-//        Text(text = book.author)
     }
 }
 
@@ -221,23 +211,23 @@ fun Title(navController: NavController) {
 }
 
 @Composable
-fun BooksList(books: List<LocalBook>, searchQuery: TextFieldValue, navController: NavController) {
+fun BooksList(books: List<Book>, searchQuery: TextFieldValue, navController: NavController) {
     val filteredBooks = if (searchQuery.text.isEmpty()) {
         if (books.size > 6) {
-            BookListIfMore6(books = books, navController)
+            BookListIfMore6(books = books as ArrayList<Book>, navController)
         } else {
             if (books.size in 4..6) {
-                BookListIfLess6(books = books, navController)
+                BookListIfLess6(books = books as ArrayList<Book>, navController)
             } else {
                 BookListIfLess3(books = books, navController)
             }
         }
     } else {
-        books.filter { it.title.contains(searchQuery.text, ignoreCase = true) }
+        books.filter { it.bookName.contains(searchQuery.text, ignoreCase = true) }
 
-        val filteredBooks = ArrayList<LocalBook>()
+        val filteredBooks = ArrayList<Book>()
         for (book in books) {
-            if (book.title.lowercase(Locale.getDefault())
+            if (book.bookName.lowercase(Locale.getDefault())
                     .contains(searchQuery.text.lowercase(Locale.getDefault()))
             ) {
                 filteredBooks.add(book)
@@ -258,7 +248,7 @@ fun BooksList(books: List<LocalBook>, searchQuery: TextFieldValue, navController
 
 //Если книг меньше или равно 3
 @Composable
-fun BookListIfLess3(books: List<LocalBook>,  navController: NavController) {
+fun BookListIfLess3(books: List<Book>, navController: NavController) {
     Box(modifier = Modifier
         .fillMaxWidth()
         .height(335.dp)
@@ -278,7 +268,7 @@ fun BookListIfLess3(books: List<LocalBook>,  navController: NavController) {
 }
 
 @Composable
-fun BookListIfLess6(books: List<LocalBook>,  navController: NavController) {
+fun BookListIfLess6(books: ArrayList<Book>, navController: NavController) {
     Box(modifier = Modifier
         .fillMaxWidth()
         .height(335.dp)
@@ -308,7 +298,7 @@ fun BookListIfLess6(books: List<LocalBook>,  navController: NavController) {
     }
 }
 @Composable
-fun BookListIfMore6(books: List<LocalBook>,  navController: NavController) {
+fun BookListIfMore6(books: ArrayList<Book>, navController: NavController) {
     val halfSize = (books.size + 1) / 2
     Box(modifier = Modifier
         .fillMaxWidth()

@@ -161,7 +161,7 @@ fun RegisterScreen(
                         textAlign = TextAlign.Center
                     )
                 }
-                // Кнопка для регистрации
+
                 Button(
                     onClick = {
                         registrationState.isLoading = true

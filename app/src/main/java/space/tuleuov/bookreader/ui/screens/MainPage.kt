@@ -24,7 +24,7 @@ fun MainPage(navController: NavController, app: Application) {
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        BooksListPreview(navController, viewModel = BookViewModel())
+        BooksListPreview(navController, viewModel = BookViewModel(app))
 
     }
 }

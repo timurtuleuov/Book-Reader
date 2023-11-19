@@ -1,10 +1,8 @@
 package space.tuleuov.bookreader.ui.component
 
 import android.annotation.SuppressLint
-import android.widget.Space
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -17,15 +15,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import space.tuleuov.bookreader.R
 import space.tuleuov.bookreader.books.model.BookViewModel
-import space.tuleuov.bookreader.books.model.LocalBook
+import space.tuleuov.bookreader.db.entity.Book
 import space.tuleuov.bookreader.ui.theme.SupportText
 
 @Composable
@@ -39,14 +36,14 @@ fun BookDetail(bookId: String, viewModel: BookViewModel, navController: NavContr
 }
 
 @Composable
-fun BookFound(book: LocalBook, navController: NavController) {
+fun BookFound(book: Book?, navController: NavController) {
     BookInfo(book = book, navController)
 }
 
 //Здесь должен быть navController. СЛЫШИШЬ ТИМУР?!
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun BookInfo(book: LocalBook, navController: NavController) {
+fun BookInfo(book: Book?, navController: NavController) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -78,7 +75,7 @@ fun BookInfo(book: LocalBook, navController: NavController) {
         ) {
             Column(modifier = Modifier.fillMaxSize().horizontalScroll(rememberScrollState())) {
                 Image(
-                    painter = painterResource(id = book.coverResId),
+                    painter = painterResource(id = R.drawable.one_piece),
                     contentDescription = null,
 
                     modifier = Modifier
@@ -87,7 +84,9 @@ fun BookInfo(book: LocalBook, navController: NavController) {
                         .clip(shape = RoundedCornerShape(1)),
                     alignment = Alignment.CenterStart
                 )
-                Text(text = book.title, fontSize = 30.sp)
+                if (book != null) {
+                    Text(text = book.bookName, fontSize = 30.sp)
+                }
                 //Здесь должен быть ряд из того что можно сделать с книгой
 
                 //
@@ -98,7 +97,9 @@ fun BookInfo(book: LocalBook, navController: NavController) {
                     )
                 ) {
                     Column(modifier = Modifier.fillMaxWidth()) {
-                        Text(text = book.author, fontSize = 20.sp)
+                        if (book != null) {
+                            book.author?.let { it1 -> Text(text = it1, fontSize = 20.sp) }
+                        }
                         Text(text = "Автор", color = SupportText)}
                     }
 
@@ -119,7 +120,9 @@ fun BookInfo(book: LocalBook, navController: NavController) {
                     ).fillMaxWidth()
                 ) {
                     Column(modifier = Modifier.fillMaxWidth()) {
-                        Text(text = book.genre, fontSize = 20.sp)
+                        if (book != null) {
+                            book.genre?.let { it1 -> Text(text = it1, fontSize = 20.sp) }
+                        }
                         Text(text = "Жанр", color = SupportText)}
                     }
 
@@ -140,8 +143,10 @@ fun BookInfo(book: LocalBook, navController: NavController) {
                     ).fillMaxWidth()
                 ) {
                     Column(modifier = Modifier.fillMaxWidth()) {
-                        Text(text = (book.yearOfPublication).toString(), fontSize = 20.sp)
-                        Text(text = "Год издания", color = SupportText)
+                        if (book != null) {
+                            Text(text = (book.series).toString(), fontSize = 20.sp)
+                        }
+                        Text(text = "Серия", color = SupportText)
                     }
                 }
                 Box(

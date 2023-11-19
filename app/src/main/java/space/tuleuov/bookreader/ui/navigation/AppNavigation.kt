@@ -16,13 +16,12 @@ import space.tuleuov.bookreader.ui.authorization.RegisterScreen
 import space.tuleuov.bookreader.ui.authorization.UserPreferences
 import space.tuleuov.bookreader.ui.component.BookDetail
 import space.tuleuov.bookreader.ui.filemanager.FileManagerContent
-import space.tuleuov.bookreader.ui.reader.fb2reader.FB2Book
 import space.tuleuov.bookreader.ui.reader.fb2reader.parseFB2
 import space.tuleuov.bookreader.ui.reader.readerview.readerUI
 import space.tuleuov.bookreader.ui.screens.MainPage
 import java.io.File
 import java.io.FileInputStream
-import java.io.InputStream
+
 
 @Composable
 fun AppNavigation(haaivin: Haaivin) {
@@ -44,9 +43,8 @@ fun AppNavigation(haaivin: Haaivin) {
         composable("mainPage") { MainPage(navController, app = app) }
         composable("bookDetails/{bookId}") { backStackEntry ->
             val bookId = backStackEntry.arguments?.getString("bookId")
-            // Здесь передайте bookId в BookDetails и отобразите информацию о книге
             if (bookId != null) {
-                BookDetail(bookId, viewModel = BookViewModel(), navController)
+                BookDetail(bookId, viewModel = BookViewModel(app), navController)
             }
         }
         composable(
@@ -63,9 +61,7 @@ fun AppNavigation(haaivin: Haaivin) {
         }
         composable("readFile/{bookPath}") { backStackEntry ->
 
-            println("Ошибка 1")
             val bookPath = backStackEntry.arguments?.getString("bookPath")
-            println("Ошибка 2")
 
             if (bookPath != null) {
                 val file = File(bookPath)
@@ -75,8 +71,7 @@ fun AppNavigation(haaivin: Haaivin) {
                     readerUI(book, navController, haaivin)
                 }
             } else {
-                println("Ошибка 4")
-                // Обработка ошибки, если bookPath == null
+                //If bookPath doesn't exist
             }
         }
 
