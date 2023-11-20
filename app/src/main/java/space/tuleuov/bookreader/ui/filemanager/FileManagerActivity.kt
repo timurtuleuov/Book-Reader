@@ -146,7 +146,7 @@ fun FileManagerContent(directoryPath: String?, navController: NavController, app
                                         if (file.extension == "fb2"){
                                             val existingBook = db.bookDao().getBookByFileLocation(pathToDirectory)
                                             if (existingBook == null) {
-                                                val book = parseFB2(FileInputStream(file))
+                                                val book = parseFB2(FileInputStream(file), context)
                                                 if (book != null && savedUser != null) {
                                                     db.bookDao().insert(
                                                         Book(
@@ -155,9 +155,9 @@ fun FileManagerContent(directoryPath: String?, navController: NavController, app
                                                             userId = savedUser.uid,
                                                             lastOpenedTime = System.currentTimeMillis(),
                                                             author = book.authors.joinToString(),
-                                                            annotation = "",
+                                                            annotation = book.annotation.joinToString(),
                                                             series = "",
-                                                            cover = "",
+                                                            cover = book.img,
                                                             genre = "",
                                                             bookmark = ""
                                                         )

@@ -198,12 +198,12 @@ fun Title(navController: NavController) {
                 onDismissRequest = { expanded = false },
                 modifier = Modifier.background(Color.White)
             ) {
-                // Вставьте элементы меню здесь
+
                 DropdownMenuItem(onClick = { navController.navigate("fileManager/$encodedPath") }) {
                     Text("Поиск файлов", fontSize = 16.sp)
                 }
-                DropdownMenuItem(onClick = { /* Действие при выборе второго элемента */ }) {
-                    Text("Второй элемент меню", fontSize = 16.sp)
+                DropdownMenuItem(onClick = { /* TODO: Made filter of books*/ }) {
+                    Text("Сортировать", fontSize = 16.sp)
                 }
             }
         }

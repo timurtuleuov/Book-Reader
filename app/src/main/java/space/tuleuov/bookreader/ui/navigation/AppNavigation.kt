@@ -30,6 +30,7 @@ fun AppNavigation(haaivin: Haaivin) {
     val savedUser = userPreferences.getUser()
     val rootDirectory = Environment.getExternalStorageDirectory()
     val navController = rememberNavController()
+    val context  = LocalContext.current
     var startDestination = if (savedUser == null) {
         "login"
     }
@@ -66,7 +67,7 @@ fun AppNavigation(haaivin: Haaivin) {
             if (bookPath != null) {
                 val file = File(bookPath)
                 val inputStream = FileInputStream(file)
-                val book = parseFB2(inputStream)
+                val book = parseFB2(inputStream, context)
                 if (book != null) {
                     readerUI(book, navController, haaivin)
                 }

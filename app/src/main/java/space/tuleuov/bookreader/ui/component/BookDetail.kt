@@ -55,7 +55,11 @@ fun BookInfo(book: Book?, navController: NavController) {
                 },
                 actions = {
                     Button(
-                        onClick = { /* TODO: Логика открытия книги */ },
+                        onClick = {
+                            if (book != null) {
+                                navController.navigate("readFile/${book.fileLocation}")
+                            }
+                        },
                         modifier = Modifier.padding(8.dp),
                     ) {
                         Text(text = "Читать", color = Color.Yellow, fontWeight = FontWeight.ExtraBold, fontSize = 20.sp )
@@ -80,7 +84,11 @@ fun BookInfo(book: Book?, navController: NavController) {
 
                     modifier = Modifier
                         .size(width = 250.dp, height = 390.dp)
-                        .clickable(onClick = { /* TODO: Логика открытия книги */ })
+                        .clickable(onClick = {
+                            if (book != null) {
+                                navController.navigate("readFile/${book.fileLocation}")
+                            }
+                        })
                         .clip(shape = RoundedCornerShape(1)),
                     alignment = Alignment.CenterStart
                 )
