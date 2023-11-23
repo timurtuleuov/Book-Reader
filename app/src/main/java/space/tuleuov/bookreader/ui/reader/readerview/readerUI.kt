@@ -1,6 +1,11 @@
 package space.tuleuov.bookreader.ui.reader.readerview
 
 import android.annotation.SuppressLint
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.fillMaxWidth
 
 import androidx.compose.foundation.layout.padding
@@ -11,6 +16,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -31,27 +37,42 @@ import space.tuleuov.bookreader.ui.reader.fb2reader.FB2Book
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun readerUI(book: FB2Book, navController: NavController, haaivin: Haaivin) {
-    Scaffold(
+    // Состояние видимости баров
+    val barStates = rememberSaveable { mutableStateOf(false) }
+    val interactionSource = remember { MutableInteractionSource() }
+    // Функция для скрытия баров
+    fun hideBars() {
+        barStates.value = false
+    }
+
+    // Функция для показа баров
+    fun showBars() {
+        barStates.value = true
+    }
+
+    com.google.accompanist.insets.ui.Scaffold(
         topBar = {
-            TopAppBar(
-                navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Назад", tint = Color.White)
-                    }
-                },
-                title = { book.title?.let { Text(text = it) } }
-            )
+            TopBar(navController = navController, title = book.title, barStates = barStates, hideBars = ::hideBars, showBars = ::showBars)
+        },
+        bottomBar = {
+            BottomBar(barStates = barStates, hideBars = ::hideBars, showBars = ::showBars)
         }
     ) {
-        LazyColumn() {
+        LazyColumn(modifier = Modifier.clickable( onClick = { toggleBars(barStates) }, indication = null, interactionSource = interactionSource)) {
             items(book.chapters.drop(1)) { chapter ->
-                Text(text = chapter.title, style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 28.sp,),
-                    textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth().padding(bottom = 20.dp, top = 20.dp))
+                Text(
+                    text = chapter.title,
+                    style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 28.sp,),
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 20.dp, top = 20.dp)
+                )
                 chapter.content.lines().forEach { line ->
                     val hyphLine = haaivin.hyphenate(string = line, dictionaryId = "ruhyph")
                     Text(
 
-                        text = "      "+ hyphLine,
+                        text = "      " + hyphLine,
                         modifier = Modifier.padding(horizontal = 8.dp),
                         textAlign = TextAlign.Justify,
                         style = TextStyle(
@@ -59,15 +80,49 @@ fun readerUI(book: FB2Book, navController: NavController, haaivin: Haaivin) {
                             hyphens = Hyphens.Auto,
                             lineBreak = LineBreak.Paragraph,
 
-                        ),
+                            ),
 
-                    )
+                        )
 
                 }
-
             }
         }
-
-
     }
+}
+private fun toggleBars(barStates: MutableState<Boolean>) {
+    barStates.value = !barStates.value
+}
+@Composable
+fun BottomBar(barStates: MutableState<Boolean>, hideBars: () -> Unit, showBars: () -> Unit) {
+    AnimatedVisibility(
+        visible = barStates.value,
+        enter = slideInVertically(initialOffsetY = { it }),
+        exit = slideOutVertically(targetOffsetY = { it }),
+        content = {
+            // Контент вашего нижнего бара
+            Text(text = "Днище")
+        }
+    )
+}
+
+@Composable
+fun TopBar(navController: NavController, title: String, barStates: MutableState<Boolean>, hideBars: () -> Unit, showBars: () -> Unit) {
+    AnimatedVisibility(
+        visible = barStates.value,
+        enter = slideInVertically(initialOffsetY = { -it }),
+        exit = slideOutVertically(targetOffsetY = { -it }),
+        content = {
+            TopAppBar(
+                navigationIcon = {
+                    IconButton(onClick = {
+                        hideBars()
+                        navController.popBackStack()
+                    }) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Назад", tint = Color.White)
+                    }
+                },
+                title = { title?.let { Text(text = it) } }
+            )
+        }
+    )
 }
