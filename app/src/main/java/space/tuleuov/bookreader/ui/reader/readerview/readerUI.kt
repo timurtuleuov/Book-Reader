@@ -6,6 +6,7 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 
 import androidx.compose.foundation.layout.padding
@@ -52,13 +53,15 @@ fun readerUI(book: FB2Book, navController: NavController, haaivin: Haaivin) {
 
     com.google.accompanist.insets.ui.Scaffold(
         topBar = {
-            TopBar(navController = navController, title = book.title, barStates = barStates, hideBars = ::hideBars, showBars = ::showBars)
+            TopBar(navController = navController, title = book.title, barStates = barStates)
         },
         bottomBar = {
-            BottomBar(barStates = barStates, hideBars = ::hideBars, showBars = ::showBars)
+            BottomBar(barStates = barStates)
         }
     ) {
-        LazyColumn(modifier = Modifier.clickable( onClick = { toggleBars(barStates) }, indication = null, interactionSource = interactionSource)) {
+        LazyColumn(modifier = Modifier
+            .clickable( onClick = { toggleBars(barStates) }, indication = null, interactionSource = interactionSource)
+        ) {
             items(book.chapters.drop(1)) { chapter ->
                 Text(
                     text = chapter.title,
@@ -93,20 +96,33 @@ private fun toggleBars(barStates: MutableState<Boolean>) {
     barStates.value = !barStates.value
 }
 @Composable
-fun BottomBar(barStates: MutableState<Boolean>, hideBars: () -> Unit, showBars: () -> Unit) {
+fun BottomBar(barStates: MutableState<Boolean>) {
     AnimatedVisibility(
         visible = barStates.value,
         enter = slideInVertically(initialOffsetY = { it }),
         exit = slideOutVertically(targetOffsetY = { it }),
         content = {
-            // Контент вашего нижнего бара
-            Text(text = "Днище")
+            BottomAppBar(){
+                var sliderPosition by remember { mutableFloatStateOf(0f) }
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    Text(text = "1 из 100", modifier = Modifier.align(Alignment.CenterHorizontally))
+                    Slider(
+                        colors = SliderDefaults.colors(
+                            thumbColor = Color.White,
+                            activeTrackColor = Color.Yellow,
+                            inactiveTrackColor = Color.LightGray,
+                        ),
+                        value = sliderPosition,
+                        onValueChange = { sliderPosition = it }
+                    )
+                }
+            }
         }
     )
 }
 
 @Composable
-fun TopBar(navController: NavController, title: String, barStates: MutableState<Boolean>, hideBars: () -> Unit, showBars: () -> Unit) {
+fun TopBar(navController: NavController, title: String, barStates: MutableState<Boolean>) {
     AnimatedVisibility(
         visible = barStates.value,
         enter = slideInVertically(initialOffsetY = { -it }),
@@ -115,7 +131,6 @@ fun TopBar(navController: NavController, title: String, barStates: MutableState<
             TopAppBar(
                 navigationIcon = {
                     IconButton(onClick = {
-                        hideBars()
                         navController.popBackStack()
                     }) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "Назад", tint = Color.White)
