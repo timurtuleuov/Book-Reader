@@ -18,7 +18,7 @@ import java.io.OutputStream
 
 data class Chapter(val title: String, val content: StringBuilder)
 
-data class FB2Book(val title: String, val authors: List<String>, val img: String?, val annotation: List<String>, val body: String, val chapters: List<Chapter>)
+data class FB2Book(val title: String, val authors: List<String>, val img: String?, val genre: String, val annotation: List<String>, val body: String, val chapters: List<Chapter>)
 fun imageBitmapFromBytes(encodedImageData: ByteArray): ImageBitmap {
     return BitmapFactory.decodeByteArray(encodedImageData, 0, encodedImageData.size).asImageBitmap()
 }
@@ -43,6 +43,7 @@ fun parseFB2(inputStream: InputStream, context: Context): FB2Book? {
     var currentChapterTitle: String? = null
     var currentChapterContent: StringBuilder? = null
     var img = mutableListOf<String>()
+    var genre = mutableListOf<String>()
 
     while (xpp.eventType != XmlPullParser.END_DOCUMENT) {
         when (xpp.eventType) {
@@ -62,7 +63,7 @@ fun parseFB2(inputStream: InputStream, context: Context): FB2Book? {
                     "first-name", "last-name" -> authors.add(text.trim())
 
                     "annotation" -> annotation.add(text)
-
+                    "genre" -> genre.add(text)
                     "p" -> {
                         body.append(text)
                         if (currentChapterContent != null) {
@@ -103,7 +104,5 @@ fun parseFB2(inputStream: InputStream, context: Context): FB2Book? {
         xpp.next()
     }
 
-    return title?.let { FB2Book(it[0], authors, img.toString(), annotation, body.toString().trim(), chapters) }
+    return title?.let { FB2Book(it[0], authors, img.toString(), genre.toString(), annotation, body.toString().trim(), chapters) }
 }
-
-

@@ -154,11 +154,11 @@ fun FileManagerContent(directoryPath: String?, navController: NavController, app
                                                             bookName = book.title,
                                                             userId = savedUser.uid,
                                                             lastOpenedTime = System.currentTimeMillis(),
-                                                            author = book.authors.joinToString(),
+                                                            author = book.authors.toString(),
                                                             annotation = book.annotation.joinToString(),
                                                             series = "",
                                                             cover = book.img,
-                                                            genre = "",
+                                                            genre = book.genre,
                                                             bookmark = ""
                                                         )
                                                     )

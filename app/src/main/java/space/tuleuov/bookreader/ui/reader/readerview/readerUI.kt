@@ -46,14 +46,10 @@ import java.util.concurrent.Executors
 fun readerUI(book: FB2Book, navController: NavController, haaivin: Haaivin) {
     val barStates = rememberSaveable { mutableStateOf(false) }
     val interactionSource = remember { MutableInteractionSource() }
-
     var columnHeightPx by remember {
         mutableStateOf(0)
     }
     val heightPage = 1427
-//    val pageCountLimit by remember{
-//        mutableStateOf(0)
-//    }
     var pageCount by remember {
         mutableStateOf(0)
     }
@@ -61,10 +57,8 @@ fun readerUI(book: FB2Book, navController: NavController, haaivin: Haaivin) {
         val result = withContext(Dispatchers.IO) {
             countPageAsync(book)
         }
-
         pageCount = result
     }
-
     com.google.accompanist.insets.ui.Scaffold(
         topBar = {
             TopBar(navController = navController, title = book.title, barStates = barStates)
@@ -111,8 +105,6 @@ fun readerUI(book: FB2Book, navController: NavController, haaivin: Haaivin) {
             }
         }
     }
-
-
 }
 
 private fun toggleBars(barStates: MutableState<Boolean>) {
@@ -170,7 +162,6 @@ suspend fun countPageAsync(book: FB2Book): Int {
     var pageCount = 0
     var columnHeightPx = 0
     book.chapters.forEach { chapter ->
-        // Прибавляем высоту каждой строки текста к общей высоте
         columnHeightPx += 114
         chapter.content.lines().forEach {line ->
             val countLine = line.length / 40
