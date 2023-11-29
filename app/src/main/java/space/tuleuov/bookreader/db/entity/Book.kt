@@ -19,16 +19,16 @@ data class Book(
     val fileLocation: String,
 
     @ColumnInfo(name = "book_name")
-    val bookName: String,
+    var bookName: String,
 
     @ColumnInfo(name = "annotation")
     val annotation: String?,
 
     @ColumnInfo(name = "author")
-    val author: String?,
+    var author: String?,
 
     @ColumnInfo(name = "series")
-    val series: String?,
+    var series: String?,
 
     @ColumnInfo(name = "user_id")
     val userId: Int,
@@ -43,5 +43,5 @@ data class Book(
     val cover: String?,
 
     @ColumnInfo(name = "genre")
-    val genre: String?
+    var genre: String?
 )

@@ -1,25 +1,25 @@
 package space.tuleuov.bookreader.ui.component
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
+import android.app.Application
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import space.tuleuov.bookreader.BookReaderApp
 import space.tuleuov.bookreader.R
 import space.tuleuov.bookreader.books.model.BookViewModel
 import space.tuleuov.bookreader.db.entity.Book
@@ -45,6 +45,7 @@ fun BookFound(book: Book?, navController: NavController) {
 @Composable
 fun BookInfo(book: Book?, navController: NavController) {
     Scaffold(
+        modifier = Modifier.fillMaxSize(),
         topBar = {
             TopAppBar(
                 navigationIcon = {
@@ -71,13 +72,16 @@ fun BookInfo(book: Book?, navController: NavController) {
         }
     ) {
         // Основное содержание экрана (содержание книги, например)
-
+        var showDialog by remember { mutableStateOf(false) }
+        var dialogState by remember { mutableStateOf("") }
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(start = 25.dp, top = 25.dp)
         ) {
-            Column(modifier = Modifier.fillMaxSize().horizontalScroll(rememberScrollState())) {
+            Column(modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())) {
                 Image(
                     painter = painterResource(id = R.drawable.one_piece),
                     contentDescription = null,
@@ -92,79 +96,154 @@ fun BookInfo(book: Book?, navController: NavController) {
                         .clip(shape = RoundedCornerShape(1)),
                     alignment = Alignment.CenterStart
                 )
-                if (book != null) {
-                    Text(text = book.bookName, fontSize = 30.sp)
+
+                Box(
+                    modifier = Modifier
+                        .clickable(
+                            onClick = { showDialog = true;
+                                dialogState = "Название книги" }
+                        )
+                        .fillMaxWidth()
+                ) {if (showDialog) {
+                    if (book != null) {
+                        BookMetadataDialog(
+                            book = book,
+                            state = dialogState,
+                            onDismiss = { showDialog = false }
+                        )
+                    }
+                }
+                        if (book != null) {
+                            Text(text = book.bookName, fontSize = 25.sp, softWrap = true)
+                        }
                 }
                 //Здесь должен быть ряд из того что можно сделать с книгой
 
                 //
                 Box(
-                    modifier = Modifier.fillMaxWidth().
-                    clickable(
-                        onClick = { /* TODO: Изменение метаданных */ }
-                    )
-                ) {
+                    modifier = Modifier
+                        .clickable(
+                            onClick = { showDialog = true;
+                                dialogState = "Автор" }
+                        )
+                        .fillMaxWidth()
+                ) {if (showDialog) {
+                    if (book != null) {
+                        BookMetadataDialog(
+                            book = book,
+                            state = dialogState,
+                            onDismiss = { showDialog = false }
+                        )
+                    }
+                }
                     Column(modifier = Modifier.fillMaxWidth()) {
                         if (book != null) {
-                            book.author?.let { it1 -> Text(text = it1, fontSize = 20.sp) }
+                            val result = book.author
+                                ?.removeSurrounding("[", "]")
+                                ?.split(", ")
+                                ?.map { it.trim() }
+                                ?.filter { it.isNotEmpty() }
+
+                            book.author?.let { it1 ->
+                                if (result != null) {
+                                    val groupedResult = result.chunked(2)
+                                    for (group in groupedResult.take(2)) {
+                                        Text(text = group.joinToString(", "), fontSize = 20.sp)
+                                    }
+                                }
+                            }
                         }
                         Text(text = "Автор", color = SupportText)}
                     }
 
                 Box(
-                    modifier = Modifier.
-                    clickable(
-                        onClick = { /* TODO: Изменение метаданных */ }
-                    ).fillMaxWidth()
-                ) {
+                    modifier = Modifier
+                        .clickable(
+                            onClick = { showDialog = true;
+                                dialogState = "Серия" }
+                        )
+                        .fillMaxWidth()
+                ) {if (showDialog) {
+                    if (book != null) {
+                        BookMetadataDialog(
+                            book = book,
+                            state = dialogState,
+                            onDismiss = { showDialog = false }
+                        )
+                    }
+                }
                     Column(modifier = Modifier.fillMaxWidth()) {
+                        if (book != null) {
+                            book.series?.let { it1 ->
+
+
+                                Text(text = it1, fontSize = 20.sp)
+
+
+                            }
+                        }
                         Text(text = "Серия", color = SupportText)
                     }
                     }
                 Box(
-                    modifier = Modifier.
-                    clickable(
-                        onClick = { /* TODO: Изменение метаданных */ }
-                    ).fillMaxWidth()
-                ) {
+                    modifier = Modifier
+                        .clickable(
+                            onClick = { showDialog = true;
+                                dialogState = "Жанр" }
+                        )
+                        .fillMaxWidth()
+                ) {if (showDialog) {
+                    if (book != null) {
+                        BookMetadataDialog(
+                            book = book,
+                            state = dialogState,
+                            onDismiss = { showDialog = false }
+                        )
+                    }
+                }
                     Column(modifier = Modifier.fillMaxWidth()) {
                         if (book != null) {
-                            book.genre?.let { it1 -> Text(text = it1, fontSize = 20.sp) }
+                            val result = book.genre
+                                ?.removeSurrounding("[", "]")
+                                ?.split(", ")
+                                ?.map { it.trim() }
+                                ?.filter { it.isNotEmpty() }
+
+                            book.genre?.let { it1 ->
+                                if (it1 != null) {
+                                    if (result != null) {
+                                        Text(text = "${result.take(1).joinToString()}", fontSize = 20.sp)
+                                    }
+                                }
+                            }
                         }
                         Text(text = "Жанр", color = SupportText)}
                     }
 
                 Box(
-                    modifier = Modifier.
-                    clickable(
-                        onClick = { /* TODO: Изменение метаданных */ }
-                    ).fillMaxWidth()
+                    modifier = Modifier
+                        .clickable(
+                            onClick = { /* TODO: Изменение метаданных */ }
+                        )
+                        .fillMaxWidth()
                 ) {
                     Column(modifier = Modifier.fillMaxWidth()) {
                         Text(text = "Текущая закладка и время последнего чтения", color = SupportText)
                     }
                 }
+
                 Box(
-                    modifier = Modifier.
-                    clickable(
-                        onClick = { /* TODO: Изменение метаданных */ }
-                    ).fillMaxWidth()
-                ) {
-                    Column(modifier = Modifier.fillMaxWidth()) {
-                        if (book != null) {
-                            Text(text = (book.series).toString(), fontSize = 20.sp)
-                        }
-                        Text(text = "Серия", color = SupportText)
-                    }
-                }
-                Box(
-                    modifier = Modifier.
-                    clickable(
-                        onClick = { /* TODO: Изменение метаданных */ }
-                    ).fillMaxWidth()
+                    modifier = Modifier
+                        .clickable(
+                            onClick = { /* TODO: Изменение метаданных */ }
+                        )
+                        .fillMaxWidth()
                 ) {
                     Column(modifier = Modifier.fillMaxWidth()){
-                        Text(text = "Формат и размер файла", color = SupportText)
+                        if (book != null) {
+                            book.fileLocation?.let { it1 -> Text(text = it1, fontSize = 20.sp, softWrap = true) }
+                        }
+                        Text(text = "Местоположение файла", color = SupportText)
                     }
                 }
 
@@ -174,4 +253,61 @@ fun BookInfo(book: Book?, navController: NavController) {
 
         }
     }
+}
+
+@Composable
+fun BookMetadataDialog(book: Book, state: String, app: Application = (LocalContext.current.applicationContext as Application), onDismiss: () -> Unit) {
+    // Здесь вы можете использовать состояния и TextFields для изменения метаданных
+    // ...
+    val db = (app as BookReaderApp).database
+    val changeState = remember {
+        mutableStateOf("")
+    }
+
+
+
+    AlertDialog(
+        onDismissRequest = { onDismiss() },
+        title = { Text(text = "Изменить значение ${state}") },
+        text = {
+            Column {
+                // Пример поля для изменения автора
+                TextField(
+                    value = changeState.value,
+                    onValueChange = { changeState.value = it },
+                    label = { Text(state) }
+                )
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = {
+                    if (state == "Автор"){
+                        book.author = changeState.value
+                    } else if (state == "Серия") {
+                        book.series = changeState.value
+                    } else if (state == "Жанр") {
+                        book.genre = changeState.value
+                    } else if (state == "Название книги") {
+                        book.bookName = changeState.value
+                    }
+
+                    db.bookDao().update(book)
+
+                    onDismiss()
+                }
+            ) {
+                Text(text = "Сохранить")
+            }
+        },
+        dismissButton = {
+            Button(
+                onClick = {
+                    onDismiss()
+                }
+            ) {
+                Text(text = "Отмена")
+            }
+        }
+    )
 }
