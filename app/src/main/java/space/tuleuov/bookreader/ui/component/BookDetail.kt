@@ -2,12 +2,17 @@ package space.tuleuov.bookreader.ui.component
 
 import android.annotation.SuppressLint
 import android.app.Application
+import android.content.Intent
+import android.util.Log
+import android.widget.Toast
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -43,7 +48,7 @@ fun BookFound(book: Book?, navController: NavController) {
 //Здесь должен быть navController. СЛЫШИШЬ ТИМУР?!
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun BookInfo(book: Book?, navController: NavController) {
+fun BookInfo(book: Book?, navController: NavController, app: Application = (LocalContext.current.applicationContext as Application)) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
@@ -71,8 +76,15 @@ fun BookInfo(book: Book?, navController: NavController) {
             )
         }
     ) {
-        // Основное содержание экрана (содержание книги, например)
+        val pickMedia = ActivityResultContracts.PickVisualMedia()
+
+
+
+
+        val context  = LocalContext.current
+        val db = (app as BookReaderApp).database
         var showDialog by remember { mutableStateOf(false) }
+        var showDeleteDialog by remember {mutableStateOf(false)}
         var dialogState by remember { mutableStateOf("") }
         Box(
             modifier = Modifier
@@ -118,6 +130,77 @@ fun BookInfo(book: Book?, navController: NavController) {
                         }
                 }
                 //Здесь должен быть ряд из того что можно сделать с книгой
+                Box {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        IconButton(
+                            onClick = {
+                                // Действия при нажатии на кнопку "Добавить в избранное"
+                            }
+                        ) {
+                            Icon(Icons.Default.Favorite, contentDescription = "Добавить в избранное")
+                        }
+
+                        IconButton(
+                            onClick = {
+                                // Действия при нажатии на кнопку "Хочу прочитать"
+                            }
+                        ) {
+                            Icon(Icons.Default.PlayArrow, contentDescription = "Читаю")
+                        }
+
+                        IconButton(
+                            onClick = {
+                                // Действия при нажатии на кнопку "Добавить в прочитанное"
+                            }
+                        ) {
+                            Icon(Icons.Default.Done, contentDescription = "Добавить в прочитанное")
+                        }
+
+                        IconButton(
+                            onClick = {
+                                pickMedia to PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                            },
+                        ) {
+                            Icon(Icons.Default.AccountCircle, contentDescription = "Изменить обложку")
+                        }
+
+                        IconButton(
+                            onClick = {
+                                // Действия при нажатии на кнопку "Поделиться файлом"
+                            }
+                        ) {
+                            Icon(Icons.Default.Share, contentDescription = "Поделиться файлом")
+                        }
+
+                        IconButton(
+                            onClick = {
+                                showDeleteDialog = true
+                            }
+                        ) {
+                            Icon(Icons.Default.Delete, contentDescription = "Удалить")
+                        }
+
+                        if (showDeleteDialog) {
+                            DeleteConfirmationDialog(
+                                onConfirm = {
+                                    // Действия при подтверждении удаления
+                                    if (book != null) {
+                                        db.bookDao().delete(book)
+                                        navController.popBackStack()
+                                        Toast.makeText(context, "Книга успешно удалена", Toast.LENGTH_SHORT).show()
+                                    }
+                                },
+                                onDismiss = {
+                                    showDeleteDialog = false
+                                }
+                            )
+                        }
+                    }
+                }
 
                 //
                 Box(
@@ -257,8 +340,6 @@ fun BookInfo(book: Book?, navController: NavController) {
 
 @Composable
 fun BookMetadataDialog(book: Book, state: String, app: Application = (LocalContext.current.applicationContext as Application), onDismiss: () -> Unit) {
-    // Здесь вы можете использовать состояния и TextFields для изменения метаданных
-    // ...
     val db = (app as BookReaderApp).database
     val changeState = remember {
         mutableStateOf("")
@@ -271,7 +352,6 @@ fun BookMetadataDialog(book: Book, state: String, app: Application = (LocalConte
         title = { Text(text = "Изменить значение ${state}") },
         text = {
             Column {
-                // Пример поля для изменения автора
                 TextField(
                     value = changeState.value,
                     onValueChange = { changeState.value = it },
@@ -298,6 +378,37 @@ fun BookMetadataDialog(book: Book, state: String, app: Application = (LocalConte
                 }
             ) {
                 Text(text = "Сохранить")
+            }
+        },
+        dismissButton = {
+            Button(
+                onClick = {
+                    onDismiss()
+                }
+            ) {
+                Text(text = "Отмена")
+            }
+        }
+    )
+}
+
+@Composable
+fun DeleteConfirmationDialog(
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = { onDismiss() },
+        title = { Text(text = "Удаление") },
+        text = { Text(text = "Вы уверены, что хотите удалить эту книгу?") },
+        confirmButton = {
+            Button(
+                onClick = {
+                    onConfirm()
+                    onDismiss()
+                }
+            ) {
+                Text(text = "Удалить")
             }
         },
         dismissButton = {
