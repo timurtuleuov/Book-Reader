@@ -5,6 +5,8 @@ import android.app.Application
 import android.content.Intent
 import android.util.Log
 import android.widget.Toast
+import androidx.activity.ComponentActivity
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.*
@@ -25,30 +27,31 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import space.tuleuov.bookreader.BookReaderApp
+import space.tuleuov.bookreader.MainActivity
 import space.tuleuov.bookreader.R
 import space.tuleuov.bookreader.books.model.BookViewModel
 import space.tuleuov.bookreader.db.entity.Book
 import space.tuleuov.bookreader.ui.theme.SupportText
 
 @Composable
-fun BookDetail(bookId: String, viewModel: BookViewModel, navController: NavController){
+fun BookDetail(bookId: String, viewModel: BookViewModel, navController: NavController, pickMedia: ActivityResultLauncher<PickVisualMediaRequest>){
     val book = viewModel.getBookById(bookId)
     if (book != null) {
-        BookFound(book = book, navController)
+        BookFound(book = book, navController, pickMedia)
     } else {
         print("Книга не найдена")
     }
 }
 
 @Composable
-fun BookFound(book: Book?, navController: NavController) {
-    BookInfo(book = book, navController)
+fun BookFound(book: Book?, navController: NavController, pickMedia: ActivityResultLauncher<PickVisualMediaRequest>) {
+    BookInfo(book = book, navController, pickMedia)
 }
 
 //Здесь должен быть navController. СЛЫШИШЬ ТИМУР?!
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun BookInfo(book: Book?, navController: NavController, app: Application = (LocalContext.current.applicationContext as Application)) {
+fun BookInfo(book: Book?, navController: NavController, pickMedia: ActivityResultLauncher<PickVisualMediaRequest>,  app: Application = (LocalContext.current.applicationContext as Application)) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
@@ -76,7 +79,7 @@ fun BookInfo(book: Book?, navController: NavController, app: Application = (Loca
             )
         }
     ) {
-        val pickMedia = ActivityResultContracts.PickVisualMedia()
+
 
 
 
@@ -162,7 +165,7 @@ fun BookInfo(book: Book?, navController: NavController, app: Application = (Loca
 
                         IconButton(
                             onClick = {
-                                pickMedia to PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                                pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
                             },
                         ) {
                             Icon(Icons.Default.AccountCircle, contentDescription = "Изменить обложку")

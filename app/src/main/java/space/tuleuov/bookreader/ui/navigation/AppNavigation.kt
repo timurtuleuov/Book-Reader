@@ -2,6 +2,8 @@ package space.tuleuov.bookreader.ui.navigation
 
 import android.app.Application
 import android.os.Environment
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavType
@@ -24,7 +26,7 @@ import java.io.FileInputStream
 
 
 @Composable
-fun AppNavigation(haaivin: Haaivin) {
+fun AppNavigation(haaivin: Haaivin, pickMedia: ActivityResultLauncher<PickVisualMediaRequest>) {
     val app = LocalContext.current.applicationContext as Application
     val userPreferences =  UserPreferences(app)
     val savedUser = userPreferences.getUser()
@@ -45,7 +47,7 @@ fun AppNavigation(haaivin: Haaivin) {
         composable("bookDetails/{bookId}") { backStackEntry ->
             val bookId = backStackEntry.arguments?.getString("bookId")
             if (bookId != null) {
-                BookDetail(bookId, viewModel = BookViewModel(app), navController)
+                BookDetail(bookId, viewModel = BookViewModel(app), navController, pickMedia)
             }
         }
         composable(
