@@ -2,10 +2,14 @@ package space.tuleuov.bookreader.ui.component
 
 import android.annotation.SuppressLint
 import android.app.Application
-import android.content.Intent
+import android.content.ContentValues.TAG
+import android.content.Context
+import android.database.Cursor
+import android.net.Uri
+import android.provider.MediaStore
 import android.util.Log
 import android.widget.Toast
-import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -21,14 +25,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import coil.compose.rememberAsyncImagePainter
 import space.tuleuov.bookreader.BookReaderApp
-import space.tuleuov.bookreader.MainActivity
-import space.tuleuov.bookreader.R
 import space.tuleuov.bookreader.books.model.BookViewModel
 import space.tuleuov.bookreader.db.entity.Book
 import space.tuleuov.bookreader.ui.theme.SupportText
@@ -42,12 +44,27 @@ fun BookDetail(bookId: String, viewModel: BookViewModel, navController: NavContr
         print("Книга не найдена")
     }
 }
-
+private fun getRealPathFromURI(context: Context, contentUri: Uri): String? {
+    var cursor: Cursor? = null
+    return try {
+        val proj = arrayOf(MediaStore.Images.Media.DATA)
+        cursor = context.getContentResolver().query(contentUri, proj, null, null, null)
+        val column_index = cursor?.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
+        if (cursor != null) {
+            cursor.moveToFirst()
+        }
+        cursor?.getString(column_index!!)
+    } catch (e: Exception) {
+        Log.e(TAG, "getRealPathFromURI Exception : $e")
+        ""
+    } finally {
+        cursor?.close()
+    }
+}
 @Composable
 fun BookFound(book: Book?, navController: NavController, pickMedia: ActivityResultLauncher<PickVisualMediaRequest>) {
     BookInfo(book = book, navController, pickMedia)
 }
-
 //Здесь должен быть navController. СЛЫШИШЬ ТИМУР?!
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
@@ -79,16 +96,31 @@ fun BookInfo(book: Book?, navController: NavController, pickMedia: ActivityResul
             )
         }
     ) {
-
-
-
-
-
         val context  = LocalContext.current
         val db = (app as BookReaderApp).database
         var showDialog by remember { mutableStateOf(false) }
         var showDeleteDialog by remember {mutableStateOf(false)}
         var dialogState by remember { mutableStateOf("") }
+        val bookCoverPath = Uri.parse(book?.cover)
+
+        var imageUri by remember {
+            mutableStateOf<Uri?>(bookCoverPath)
+        }
+        val pickImage = rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri: Uri? ->
+
+            if (uri != null) {
+                if (book != null) {
+                    imageUri = uri
+                    val imagePath = getRealPathFromURI(context, uri)
+//                    val decodedImageUrl = java.net.URLDecoder.decode(uri.get, "UTF-8")
+
+                    db.bookDao().update(book.copy(cover = imagePath))
+                }
+            }
+        }
+
+
+
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -98,7 +130,7 @@ fun BookInfo(book: Book?, navController: NavController, pickMedia: ActivityResul
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())) {
                 Image(
-                    painter = painterResource(id = R.drawable.one_piece),
+                    painter = rememberAsyncImagePainter(model = imageUri),
                     contentDescription = null,
 
                     modifier = Modifier
@@ -115,8 +147,10 @@ fun BookInfo(book: Book?, navController: NavController, pickMedia: ActivityResul
                 Box(
                     modifier = Modifier
                         .clickable(
-                            onClick = { showDialog = true;
-                                dialogState = "Название книги" }
+                            onClick = {
+                                showDialog = true;
+                                dialogState = "Название книги"
+                            }
                         )
                         .fillMaxWidth()
                 ) {if (showDialog) {
@@ -165,7 +199,10 @@ fun BookInfo(book: Book?, navController: NavController, pickMedia: ActivityResul
 
                         IconButton(
                             onClick = {
-                                pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                                val url: Uri
+                                pickImage.launch("image/*")
+
+
                             },
                         ) {
                             Icon(Icons.Default.AccountCircle, contentDescription = "Изменить обложку")
@@ -209,8 +246,10 @@ fun BookInfo(book: Book?, navController: NavController, pickMedia: ActivityResul
                 Box(
                     modifier = Modifier
                         .clickable(
-                            onClick = { showDialog = true;
-                                dialogState = "Автор" }
+                            onClick = {
+                                showDialog = true;
+                                dialogState = "Автор"
+                            }
                         )
                         .fillMaxWidth()
                 ) {if (showDialog) {
@@ -245,8 +284,10 @@ fun BookInfo(book: Book?, navController: NavController, pickMedia: ActivityResul
                 Box(
                     modifier = Modifier
                         .clickable(
-                            onClick = { showDialog = true;
-                                dialogState = "Серия" }
+                            onClick = {
+                                showDialog = true;
+                                dialogState = "Серия"
+                            }
                         )
                         .fillMaxWidth()
                 ) {if (showDialog) {
@@ -274,8 +315,10 @@ fun BookInfo(book: Book?, navController: NavController, pickMedia: ActivityResul
                 Box(
                     modifier = Modifier
                         .clickable(
-                            onClick = { showDialog = true;
-                                dialogState = "Жанр" }
+                            onClick = {
+                                showDialog = true;
+                                dialogState = "Жанр"
+                            }
                         )
                         .fillMaxWidth()
                 ) {if (showDialog) {
