@@ -1,7 +1,12 @@
 package space.tuleuov.bookreader.ui.component
 
 import android.content.res.Resources
+import android.graphics.Bitmap
+import android.graphics.ImageDecoder
+import android.net.Uri
+import android.os.Build
 import android.os.Environment
+import android.provider.MediaStore
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -16,6 +21,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.TextFieldValue
@@ -23,11 +29,13 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import coil.compose.rememberAsyncImagePainter
 import space.tuleuov.bookreader.R
 import space.tuleuov.bookreader.books.model.BookViewModel
 import space.tuleuov.bookreader.db.entity.Book
 import space.tuleuov.bookreader.ui.theme.SupportText
 import space.tuleuov.bookreader.ui.theme.TextTitle
+import java.io.IOException
 import java.net.URLEncoder
 import java.util.*
 import kotlin.collections.ArrayList
@@ -47,9 +55,26 @@ fun BookItem(book: Book, navController: NavController) {
                 navController.navigate("bookDetails/${book.id}")
             }
     ) {
-
+        val context  = LocalContext.current
+        val contentResolver = context.contentResolver
+        val bitmap: Bitmap? = try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                ImageDecoder.decodeBitmap(
+                    ImageDecoder.createSource(
+                        contentResolver,
+                        Uri.parse(book?.cover)
+                    )
+                )
+            } else {
+                MediaStore.Images.Media.getBitmap(contentResolver, Uri.parse(book?.cover))
+            }
+        } catch (e: IOException) {
+            e.printStackTrace()
+            null
+        }
+        var imageBitmap by remember { mutableStateOf<Bitmap?>(bitmap) }
         Image(
-            painter = painterResource(id = R.drawable.one_piece),
+            painter = rememberAsyncImagePainter(imageBitmap),
             contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier = Modifier

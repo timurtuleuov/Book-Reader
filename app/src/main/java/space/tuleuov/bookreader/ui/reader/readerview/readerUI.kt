@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.*
 
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -53,6 +54,10 @@ fun readerUI(book: FB2Book, navController: NavController, haaivin: Haaivin) {
     var pageCount by remember {
         mutableStateOf(0)
     }
+    val listState = rememberLazyListState()
+    var scrollPercent by remember {
+        mutableStateOf(0f)
+    }
     LaunchedEffect(book) {
         val result = withContext(Dispatchers.IO) {
             countPageAsync(book)
@@ -64,10 +69,11 @@ fun readerUI(book: FB2Book, navController: NavController, haaivin: Haaivin) {
             TopBar(navController = navController, title = book.title, barStates = barStates)
         },
         bottomBar = {
-            BottomBar(barStates = barStates, pageCount)
+            BottomBar(barStates = barStates, scrollPercent, pageCount)
         }
     ) {
         LazyColumn(
+            state = listState,
             modifier = Modifier
                 .fillMaxSize()
                 .clickable(
@@ -87,6 +93,8 @@ fun readerUI(book: FB2Book, navController: NavController, haaivin: Haaivin) {
                         .padding(bottom = 20.dp, top = 20.dp)
 
                 )
+                scrollPercent = (listState.firstVisibleItemIndex.toFloat() / book.chapters.count().toFloat()) * 100
+                println(scrollPercent)
                 chapter.content.lines().forEach { line ->
                     val hyphLine = haaivin.hyphenate(string = line, dictionaryId = "ruhyph")
                     Text(
@@ -111,16 +119,16 @@ private fun toggleBars(barStates: MutableState<Boolean>) {
     barStates.value = !barStates.value
 }
 @Composable
-fun BottomBar(barStates: MutableState<Boolean>, pageCount: Int) {
+fun BottomBar(barStates: MutableState<Boolean>, scrollPos: Float, pageCount: Int) {
     AnimatedVisibility(
         visible = barStates.value,
         enter = slideInVertically(initialOffsetY = { it }),
         exit = slideOutVertically(targetOffsetY = { it }),
         content = {
             BottomAppBar(){
-                var sliderPosition by remember { mutableFloatStateOf(0f) }
+                var sliderPosition by remember { mutableFloatStateOf(scrollPos) }
                 Column(modifier = Modifier.fillMaxWidth()) {
-                    Text(text = "1 из $pageCount", modifier = Modifier.align(Alignment.CenterHorizontally))
+                    Text(text = "{} из $pageCount", modifier = Modifier.align(Alignment.CenterHorizontally))
                     Slider(
                         colors = SliderDefaults.colors(
                             thumbColor = Color.White,
