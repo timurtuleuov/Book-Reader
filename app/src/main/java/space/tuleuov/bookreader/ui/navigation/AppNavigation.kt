@@ -26,7 +26,7 @@ import java.io.FileInputStream
 
 
 @Composable
-fun AppNavigation(haaivin: Haaivin, pickMedia: ActivityResultLauncher<PickVisualMediaRequest>) {
+fun AppNavigation(haaivin: Haaivin) {
     val app = LocalContext.current.applicationContext as Application
     val userPreferences =  UserPreferences(app)
     val savedUser = userPreferences.getUser()
@@ -47,7 +47,7 @@ fun AppNavigation(haaivin: Haaivin, pickMedia: ActivityResultLauncher<PickVisual
         composable("bookDetails/{bookId}") { backStackEntry ->
             val bookId = backStackEntry.arguments?.getString("bookId")
             if (bookId != null) {
-                BookDetail(bookId, viewModel = BookViewModel(app), navController, pickMedia)
+                BookDetail(bookId, viewModel = BookViewModel(app), navController)
             }
         }
         composable(

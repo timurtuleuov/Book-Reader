@@ -20,13 +20,7 @@ import space.tuleuov.bookreader.ui.theme.BookReaderTheme
 import javax.inject.Inject
 
 class MainActivity : ComponentActivity() {
-    val pickMedia = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
-        if (uri != null) {
-            Log.d("PhotoPicker", "Selected URI: $uri")
-        } else {
-            Log.d("PhotoPicker", "No media selected")
-        }
-    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -41,7 +35,7 @@ class MainActivity : ComponentActivity() {
                             HunspellDictionary("ruhyph") { assets.open("hyph_ru_RU.dic") },
                         ))
                     }
-                    AppNavigation(hyphRu, pickMedia)
+                    AppNavigation(hyphRu)
                 }
             }
         }

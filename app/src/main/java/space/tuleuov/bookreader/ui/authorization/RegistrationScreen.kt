@@ -133,8 +133,6 @@ fun RegisterScreen(
                     }
                 }
 
-
-
                 // Кнопка для возврата к экрану входа
                 TextButton(
                     onClick = {

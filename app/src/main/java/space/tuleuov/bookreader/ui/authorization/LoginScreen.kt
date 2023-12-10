@@ -57,7 +57,6 @@ fun LoginScreen(
                     .verticalScroll(rememberScrollState()),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // Ваши элементы UI
                 if (loginState.isLoading) {
                     CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
                 }
@@ -79,7 +78,6 @@ fun LoginScreen(
                     textAlign = TextAlign.Center
                 )
                 Spacer(modifier = Modifier.height(32.dp))
-                // Пример использования OutlinedTextField для email
                 OutlinedTextField(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -90,7 +88,6 @@ fun LoginScreen(
                     isError = emailState.error != null
                 )
 
-                // Пример использования TextField для password
                 TextField(
                     modifier = Modifier.fillMaxWidth(),
                     value = passwordState.text,
@@ -115,8 +112,6 @@ fun LoginScreen(
                     }
                 )
 
-
-                // Пример обработки состояния входа
                 when {
                     loginState.isLoading -> {
                         CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))

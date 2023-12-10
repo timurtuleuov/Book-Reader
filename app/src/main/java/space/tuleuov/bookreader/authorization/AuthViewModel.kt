@@ -47,7 +47,6 @@ class AuthViewModel(
     private val _registrationState = mutableStateOf(RegistrationState())
     val registrationState: State<RegistrationState> = _registrationState
 
-    // Другие необходимые методы для управления состоянием
 
     fun setName(name: String) {
         _nameState.value = _nameState.value.copy(text = name, error = null)

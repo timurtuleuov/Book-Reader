@@ -4,8 +4,12 @@ import android.annotation.SuppressLint
 import android.app.Application
 import android.content.ContentValues.TAG
 import android.content.Context
+import android.content.Intent
 import android.database.Cursor
+import android.graphics.Bitmap
+import android.graphics.ImageDecoder
 import android.net.Uri
+import android.os.Build
 import android.provider.MediaStore
 import android.util.Log
 import android.widget.Toast
@@ -28,47 +32,36 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.net.toUri
 import androidx.navigation.NavController
+import coil.compose.ImagePainter
 import coil.compose.rememberAsyncImagePainter
+import coil.compose.rememberImagePainter
+import coil.request.ImageRequest
 import space.tuleuov.bookreader.BookReaderApp
 import space.tuleuov.bookreader.books.model.BookViewModel
 import space.tuleuov.bookreader.db.entity.Book
 import space.tuleuov.bookreader.ui.theme.SupportText
+import java.io.IOException
 
 @Composable
-fun BookDetail(bookId: String, viewModel: BookViewModel, navController: NavController, pickMedia: ActivityResultLauncher<PickVisualMediaRequest>){
+fun BookDetail(bookId: String, viewModel: BookViewModel, navController: NavController){
     val book = viewModel.getBookById(bookId)
     if (book != null) {
-        BookFound(book = book, navController, pickMedia)
+        BookFound(book = book, navController)
     } else {
         print("Книга не найдена")
     }
 }
-private fun getRealPathFromURI(context: Context, contentUri: Uri): String? {
-    var cursor: Cursor? = null
-    return try {
-        val proj = arrayOf(MediaStore.Images.Media.DATA)
-        cursor = context.getContentResolver().query(contentUri, proj, null, null, null)
-        val column_index = cursor?.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
-        if (cursor != null) {
-            cursor.moveToFirst()
-        }
-        cursor?.getString(column_index!!)
-    } catch (e: Exception) {
-        Log.e(TAG, "getRealPathFromURI Exception : $e")
-        ""
-    } finally {
-        cursor?.close()
-    }
-}
+
 @Composable
-fun BookFound(book: Book?, navController: NavController, pickMedia: ActivityResultLauncher<PickVisualMediaRequest>) {
-    BookInfo(book = book, navController, pickMedia)
+fun BookFound(book: Book?, navController: NavController) {
+    BookInfo(book = book, navController)
 }
 //Здесь должен быть navController. СЛЫШИШЬ ТИМУР?!
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun BookInfo(book: Book?, navController: NavController, pickMedia: ActivityResultLauncher<PickVisualMediaRequest>,  app: Application = (LocalContext.current.applicationContext as Application)) {
+fun BookInfo(book: Book?, navController: NavController,  app: Application = (LocalContext.current.applicationContext as Application)) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
@@ -101,36 +94,65 @@ fun BookInfo(book: Book?, navController: NavController, pickMedia: ActivityResul
         var showDialog by remember { mutableStateOf(false) }
         var showDeleteDialog by remember {mutableStateOf(false)}
         var dialogState by remember { mutableStateOf("") }
-        val bookCoverPath = Uri.parse(book?.cover)
+
 
         var imageUri by remember {
-            mutableStateOf<Uri?>(bookCoverPath)
+            mutableStateOf<Uri?>(Uri.parse(book!!.cover))
         }
+        val contentResolver = context.contentResolver
+        val bitmap: Bitmap? = try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                ImageDecoder.decodeBitmap(
+                    ImageDecoder.createSource(
+                        contentResolver,
+                        Uri.parse(book?.cover)
+                    )
+                )
+            } else {
+                MediaStore.Images.Media.getBitmap(contentResolver, Uri.parse(book?.cover))
+            }
+        } catch (e: IOException) {
+            e.printStackTrace()
+            null
+        }
+        var imageBitmap by remember { mutableStateOf<Bitmap?>(bitmap) }
         val pickImage = rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri: Uri? ->
 
             if (uri != null) {
+                val uriString = uri.toString()
                 if (book != null) {
-                    imageUri = uri
-                    val imagePath = getRealPathFromURI(context, uri)
-//                    val decodedImageUrl = java.net.URLDecoder.decode(uri.get, "UTF-8")
-
-                    db.bookDao().update(book.copy(cover = imagePath))
+                    context.contentResolver.takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                    db.bookDao().update(book.copy(cover = uriString))
+                    println("IMAGE URI $uriString")
+                    imageUri = Uri.parse(uriString)
+                    val bit = MediaStore.Images.Media.getBitmap(contentResolver, uri)
+                    imageBitmap = bit
+                    println("IMAGE URI $imageUri")
                 }
             }
         }
 
 
 
+
+// теперь у вас есть bitmap, который вы можете использовать в вашем приложении
+
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(start = 25.dp, top = 25.dp)
+                .padding(start = 25.dp)
         ) {
             Column(modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())) {
+                val painter = rememberAsyncImagePainter(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(imageUri)
+                        .size(coil.size.Size.ORIGINAL) // Set the target size to load the image at.
+                        .build()
+                )
                 Image(
-                    painter = rememberAsyncImagePainter(model = imageUri),
+                    painter = rememberAsyncImagePainter(imageBitmap),
                     contentDescription = null,
 
                     modifier = Modifier
