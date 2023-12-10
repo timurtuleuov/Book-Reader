@@ -19,7 +19,7 @@ fun MainPage(navController: NavController, app: Application) {
             .padding(top = 40.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        UserPreview(app)
+        UserPreview(app, navController)
         Spacer(modifier = Modifier.height(60.dp))
 
         Spacer(modifier = Modifier.height(20.dp))

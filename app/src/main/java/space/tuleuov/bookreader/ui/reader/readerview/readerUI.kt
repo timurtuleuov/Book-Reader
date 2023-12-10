@@ -40,6 +40,7 @@ import space.tuleuov.bookreader.hyphe.Haaivin
 import space.tuleuov.bookreader.ui.reader.fb2reader.FB2Book
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import kotlin.math.roundToInt
 
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -69,7 +70,28 @@ fun readerUI(book: FB2Book, navController: NavController, haaivin: Haaivin) {
             TopBar(navController = navController, title = book.title, barStates = barStates)
         },
         bottomBar = {
-            BottomBar(barStates = barStates, scrollPercent, pageCount)
+            BottomBar(barStates = barStates, scrollPercent, (AnimatedVisibility(
+                visible = barStates.value,
+                enter = slideInVertically(initialOffsetY = { it }),
+                exit = slideOutVertically(targetOffsetY = { it }),
+                content = {
+                    BottomAppBar(){
+
+                        Column(modifier = Modifier.fillMaxWidth()) {
+                            Text(text = "${(pageCount * scrollPercent).roundToInt()} из $pageCount", modifier = Modifier.align(Alignment.CenterHorizontally))
+                            Slider(
+                                colors = SliderDefaults.colors(
+                                    thumbColor = Color.White,
+                                    activeTrackColor = Color.Yellow,
+                                    inactiveTrackColor = Color.LightGray,
+                                ),
+                                value = scrollPercent,
+                                onValueChange = { scrollPercent = it }
+                            )
+                        }
+                    }
+                }
+            )))
         }
     ) {
         LazyColumn(
@@ -83,6 +105,7 @@ fun readerUI(book: FB2Book, navController: NavController, haaivin: Haaivin) {
                 )
 
         ) {
+
             items(book.chapters.drop(1)) { chapter ->
                 Text(
                     text = chapter.title,
@@ -93,9 +116,10 @@ fun readerUI(book: FB2Book, navController: NavController, haaivin: Haaivin) {
                         .padding(bottom = 20.dp, top = 20.dp)
 
                 )
-                scrollPercent = (listState.firstVisibleItemIndex.toFloat() / book.chapters.count().toFloat()) * 100
-                println(scrollPercent)
+
                 chapter.content.lines().forEach { line ->
+                    scrollPercent = (listState.firstVisibleItemIndex.toFloat() / book.chapters.lastIndex.toFloat())
+                    println(scrollPercent)
                     val hyphLine = haaivin.hyphenate(string = line, dictionaryId = "ruhyph")
                     Text(
                         text = "      " + hyphLine,
@@ -119,29 +143,12 @@ private fun toggleBars(barStates: MutableState<Boolean>) {
     barStates.value = !barStates.value
 }
 @Composable
-fun BottomBar(barStates: MutableState<Boolean>, scrollPos: Float, pageCount: Int) {
-    AnimatedVisibility(
-        visible = barStates.value,
-        enter = slideInVertically(initialOffsetY = { it }),
-        exit = slideOutVertically(targetOffsetY = { it }),
-        content = {
-            BottomAppBar(){
-                var sliderPosition by remember { mutableFloatStateOf(scrollPos) }
-                Column(modifier = Modifier.fillMaxWidth()) {
-                    Text(text = "{} из $pageCount", modifier = Modifier.align(Alignment.CenterHorizontally))
-                    Slider(
-                        colors = SliderDefaults.colors(
-                            thumbColor = Color.White,
-                            activeTrackColor = Color.Yellow,
-                            inactiveTrackColor = Color.LightGray,
-                        ),
-                        value = sliderPosition,
-                        onValueChange = { sliderPosition = it }
-                    )
-                }
-            }
-        }
-    )
+fun BottomBar(barStates: MutableState<Boolean>, scrollPos: Float, bottomApp: Unit) {
+    var sliderPosition by remember { mutableStateOf(scrollPos/100) }
+    LaunchedEffect(scrollPos) {
+        sliderPosition = scrollPos/100
+    }
+    bottomApp
 }
 
 @Composable

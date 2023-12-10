@@ -120,7 +120,6 @@ fun RegisterScreen(
                     }
                 )
 
-                // Пример обработки состояния регистрации
                 when {
                     registrationState.isLoading -> {
                         CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))

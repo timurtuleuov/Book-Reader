@@ -6,6 +6,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Card
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -18,12 +19,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
 import space.tuleuov.bookreader.ui.authorization.UserPreferences
 import space.tuleuov.bookreader.ui.theme.SupportText
 
 @Composable
-fun UserPreview(app: Application) {
+fun UserPreview(app: Application, navController: NavController) {
     val userPreferences =  UserPreferences(app)
     val savedUser = userPreferences.getUser()
     Row(
@@ -31,19 +33,19 @@ fun UserPreview(app: Application) {
             .size(width = 320.dp, height = 60.dp)
             .padding(0.dp)
     ) {
-        savedUser?.avatar?.let { UserAvatar(it) }
+        savedUser?.avatar?.let { UserAvatar(it, savedUser.level) }
         if (savedUser != null) {
             UserName(savedUser.name)
         }
         Spacer(modifier = Modifier.width(100.dp))
-        UserStatsButton()
+        UserStatsButton(navController)
     }
 
 }
 
 @SuppressLint("ResourceType")
 @Composable
-fun UserAvatar(avatar: String) {
+fun UserAvatar(avatar: String, level: Int) {
     Card(
         modifier = Modifier
             .size(60.dp),
@@ -62,6 +64,11 @@ fun UserAvatar(avatar: String) {
                 contentDescription = "",
                 contentScale = ContentScale.Crop
             )
+        }
+        Card(
+            modifier = Modifier.padding(30.dp)
+        ) {
+            Text(text = "$level", fontSize = 20.sp)
         }
     }
 }
@@ -85,7 +92,7 @@ fun UserName(name: String) {
 }
 
 @Composable
-fun UserStatsButton(){
+fun UserStatsButton(navController: NavController){
     Card(
         modifier = Modifier
             .size(50.dp),
@@ -93,10 +100,13 @@ fun UserStatsButton(){
         elevation = 0.dp
 
     ) {
-        Image(
-            painterResource(id = R.drawable.setting),
-            contentDescription = "",
-            contentScale = ContentScale.Crop
-        )
+        IconButton(onClick = { navController.navigate("userPage") }) {
+            Image(
+                painterResource(id = R.drawable.setting),
+                contentDescription = "",
+                contentScale = ContentScale.Crop
+            )
+        }
+
     }
 }

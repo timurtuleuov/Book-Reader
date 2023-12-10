@@ -9,10 +9,10 @@ import androidx.room.PrimaryKey
 class User(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "uid") val uid: Int = 0,
-    @ColumnInfo(name = "name") val name: String,
-    @ColumnInfo(name ="email") val email: String,
-    @ColumnInfo(name ="password") val password: String,
-    @ColumnInfo(name ="avatar") val avatar: String?,
+    @ColumnInfo(name = "name") var name: String,
+    @ColumnInfo(name ="email") var email: String,
+    @ColumnInfo(name ="password") var password: String,
+    @ColumnInfo(name ="avatar") var avatar: String?,
     @ColumnInfo(name ="status") val status: String?,
     @ColumnInfo(name ="level") val level: Int
 )

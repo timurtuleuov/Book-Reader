@@ -20,7 +20,9 @@ import space.tuleuov.bookreader.ui.component.BookDetail
 import space.tuleuov.bookreader.ui.filemanager.FileManagerContent
 import space.tuleuov.bookreader.ui.reader.fb2reader.parseFB2
 import space.tuleuov.bookreader.ui.reader.readerview.readerUI
+import space.tuleuov.bookreader.ui.screens.ChangeUserData
 import space.tuleuov.bookreader.ui.screens.MainPage
+import space.tuleuov.bookreader.ui.screens.UserProfile
 import java.io.File
 import java.io.FileInputStream
 
@@ -43,6 +45,8 @@ fun AppNavigation(haaivin: Haaivin) {
 
         composable("login") { LoginScreen(navController)}
         composable("registration"){ RegisterScreen(navController)}
+        composable("userPage"){ UserProfile(navController)}
+        composable("changeUserData"){ ChangeUserData(navController)}
         composable("mainPage") { MainPage(navController, app = app) }
         composable("bookDetails/{bookId}") { backStackEntry ->
             val bookId = backStackEntry.arguments?.getString("bookId")

@@ -13,7 +13,7 @@ class UserPreferences(private val context: Context) {
         context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
     }
 
-    suspend fun saveUser(user: User) = withContext(Dispatchers.IO) {
+    fun saveUser(user: User)  {
         sharedPreferences.edit {
             putInt(KEY_UID, user.uid)
             putString(KEY_NAME, user.name)

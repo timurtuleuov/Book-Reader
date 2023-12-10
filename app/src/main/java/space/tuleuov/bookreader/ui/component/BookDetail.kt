@@ -135,7 +135,6 @@ fun BookInfo(book: Book?, navController: NavController,  app: Application = (Loc
 
 
 
-// теперь у вас есть bitmap, который вы можете использовать в вашем приложении
 
         Box(
             modifier = Modifier
@@ -338,7 +337,7 @@ fun BookInfo(book: Book?, navController: NavController,  app: Application = (Loc
                     modifier = Modifier
                         .clickable(
                             onClick = {
-                                showDialog = true;
+                                showDialog = true
                                 dialogState = "Жанр"
                             }
                         )
